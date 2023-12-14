@@ -267,6 +267,9 @@ for file_name in os.listdir("./minecraft/worldgen/structure"):
                 mobs_info[mob_id] = (mob_hp.get(mob_name, 20), player_realtion)
                 put_mob_to_structure(mob_id, structure_id)
 
+
+# Format scripts
+
 with open("sql/dimensions_data.sql", "w") as file:
     file.write("INSERT INTO dimension (id, name, image, description) VALUES \n")
 
@@ -447,3 +450,26 @@ with open("sql/item_tag_data.sql", "w") as file:
 
     lines[-1] += ";\n"
     file.writelines(lines)
+
+with open("sql/ingredients_data.sql", "w") as file:
+    file.write("INSERT INTO ingredient (craft_id, ing_symbol, item_or_tag_flag, item_id, tag_id) VALUES\n")
+
+    shapeless_keys = {}
+
+    for index, (craft_id, key, flag, item_id, tag_id) in enumerate(ingredients):
+        item_id = quote_if_not_null(item_id)
+        tag_id = quote_if_not_null(tag_id)
+        flag = "true" if flag else "false"
+
+        if key == 'null':
+            if craft_id not in shapeless_keys:
+                shapeless_keys[craft_id] = 0
+            key = chr(ord('a') + shapeless_keys[craft_id])
+            shapeless_keys[craft_id] += 1
+
+        file.write(f'({craft_id}, \'{key}\', {flag}, {item_id}, {tag_id})')
+
+        if index == len(ingredients) - 1:
+            file.write(";\n")
+        else:
+            file.write(",\n")

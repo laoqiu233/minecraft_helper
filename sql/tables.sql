@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS ingredient (
     craft_id INTEGER REFERENCES recipe(id),
     ing_symbol CHAR NOT NULL,
     item_or_tag_flag BOOLEAN,
-    item INTEGER REFERENCES item(id),
-    tag INTEGER references tag(id),
+    item_id INTEGER REFERENCES item(id),
+    tag_id INTEGER references tag(id),
     PRIMARY KEY (craft_id, ing_symbol)
 );
 
