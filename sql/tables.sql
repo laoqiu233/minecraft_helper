@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS tag (
 );
 
 CREATE TABLE IF NOT EXISTS item_tag (
-    item_id REFERENCES item(id) NOT NULL,
+    item_id INTEGER REFERENCES item(id) NOT NULL,
     tag_id INTEGER REFERENCES tag(id) NOT NULL,
     PRIMARY KEY (item_id, tag_id)
 );
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS ingredient (
     ing_symbol CHAR NOT NULL,
     item_or_tag_flag BOOLEAN,
     item_id INTEGER REFERENCES item(id),
-    tag_id INTEGER references tag(id),
+    tag_id INTEGER REFERENCES tag(id),
     PRIMARY KEY (craft_id, ing_symbol)
 );
 
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS biome_drop_table (
 CREATE TABLE IF NOT EXISTS gift_drop_table (
     id SERIAL PRIMARY KEY,
     gift_source VARCHAR,
-    item INTEGER REFERENCES item(id) NOT NULL,
+    item_id INTEGER REFERENCES item(id) NOT NULL,
     amount INTEGER NOT NULL,
     probability INTEGER NOT NULL, -- In percents from 0 to 100,
     metadata json

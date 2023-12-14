@@ -50,7 +50,7 @@ def long_substr(data):
 
 def quote_if_not_null(data):
     if data != "null":
-        data = f"\"{data}\""
+        data = f"'{data}'"
     return data
     
 def parse_ingredient(craft_id, ingredient, key = "null"):
@@ -120,6 +120,30 @@ for index, file_name in enumerate(os.listdir("./minecraft/recipes")):
             (index, result_item_id, result_item_amount, craft_type, category, group)
         )
 
+# Item tags
+item_tags = {}
+
+for file_name in os.listdir("./minecraft/tags/items"):
+    tag_name = "#minecraft:" + file_name[:-5]
+    with open(f"./minecraft/tags/items/{file_name}") as file:
+        data = json.load(file)
+        item_tags[tag_name] = set(data["values"])
+
+
+def find_item_tags(tag):
+    res = set(item_tags[tag])
+    for i in list(res):
+        if i[0] == '#':
+            res.remove(i)
+            for item in find_item_tags(i):
+                res.add(item)
+    return res
+
+for tag in item_tags:
+    for item in item_tags[tag]:
+        tag_id = parse_tag(tag)
+        item_id = parse_item(item)
+        put_item_in_tag(item_id, tag_id)
 
 # Biome tags
 
@@ -429,7 +453,7 @@ with open("sql/gift_drop_tables_data.sql", "w") as file:
     file.write("INSERT INTO gift_drop_table (id, gift_source, item_id, amount, probability) VALUES\n")
 
     for index, (gift_source, item_id, amount, probability) in enumerate(gift_drops):
-        file.write(f'({index}, "{gift_source}", {item_id}, {count}, {weight})')
+        file.write(f"({index}, '{gift_source}', {item_id}, {count}, {weight})")
 
         if index == len(gift_drops) - 1:
             file.write(";\n")
@@ -456,7 +480,7 @@ with open("sql/dimensions_data.sql", "w") as file:
         dimension_description = f"{dimension_name} dimension"
         dimension_image = f"/dimensions/{dimension}.png"
 
-        file.write(f"({dimension_id}, \"{dimension_name}\", \"{dimension_image}\", \"{dimension_description}\")")
+        file.write(f"({dimension_id}, '{dimension_name}', '{dimension_image}', '{dimension_description}')")
 
         if index == len(dimensions) - 1:
             file.write(";\n")
@@ -473,7 +497,7 @@ with open("sql/biomes_data.sql", "w") as file:
         biome_image = f"/biomes/{biome}.png"
         biome_dimension = biomes_to_dimension[biome_id]
 
-        file.write(f'({biome_id}, "{biome_name}", "{biome_image}", "{biome_description}", {biome_dimension})')
+        file.write(f"({biome_id}, '{biome_name}', '{biome_image}', '{biome_description}', {biome_dimension})")
 
         if index == len(biomes) - 1:
             file.write(";\n")
@@ -489,7 +513,7 @@ with open("sql/structures_data.sql", "w") as file:
         structure_image = f"/structures/{structure}.png"
         structure_description = f"The {structure_name} structure"
 
-        file.write(f'({structure_id}, "{structure_name}", "{structure_image}", "{structure_description}")')
+        file.write(f"({structure_id}, '{structure_name}', '{structure_image}', '{structure_description}')")
 
         if index == len(structures) - 1:
             file.write(";\n")
@@ -521,7 +545,7 @@ with open("sql/mobs_data.sql", "w") as file:
         mob_image = f"/mobs/{mob}.png"
         mob_hp, player_realtion = mobs_info[mob_id]
 
-        file.write(f'({mob_id}, "{mob_name}", "{mob_image}", {mob_hp}, {player_realtion})')
+        file.write(f"({mob_id}, '{mob_name}', '{mob_image}', {mob_hp}, {player_realtion})")
 
         if index == len(mobs) - 1:
             file.write(";\n")
@@ -560,7 +584,7 @@ with open("sql/tags_data.sql", "w") as file:
     file.write("INSERT INTO tag (id, name) VALUES\n")
     
     for index, tag in enumerate(tags):
-        file.write(f"({tags[tag]}, \"{tag}\")")
+        file.write(f"({tags[tag]}, '{tag}')")
 
         if index == len(tags) - 1:
             file.write(";\n")
@@ -573,7 +597,7 @@ with open("sql/items_data.sql", "w") as file:
     for index, item in enumerate(items):
         item_name = " ".join([part.capitalize() for part in item[10:].split("_")])
 
-        file.write(f"({items[item]}, \"{item_name}\", \"/items/{item}.png\")")
+        file.write(f"({items[item]}, '{item_name}', '/items/{item}.png')")
         
         if index == len(items) - 1:
             file.write(";\n")
@@ -583,14 +607,14 @@ with open("sql/items_data.sql", "w") as file:
 with open("sql/recipes_data.sql", "w") as file:
     file.write("INSERT INTO recipe (id, result_item, result_amount, craft_type, craft_category, craft_group) VALUES \n")
 
-    for recipe in recipes:
+    for real_index, recipe in enumerate(recipes):
         index, result_item_id, result_item_amount, craft_type, category, group = recipe
         category = quote_if_not_null(category)
         group = quote_if_not_null(group)
 
-        file.write(f"({index}, {result_item_id}, {result_item_amount}, \"{craft_type}\", {category}, {group})")
+        file.write(f"({index}, {result_item_id}, {result_item_amount}, '{craft_type}', {category}, {group})")
 
-        if index == len(recipes) - 1:
+        if real_index == len(recipes) - 1:
             file.write(";\n")
         else:
             file.write(",\n")
@@ -601,7 +625,7 @@ with open("sql/recipes_extra_data.sql", "w") as file:
     lines = []
 
     for index in craft_patterns:
-        lines.append(f"({index}, \"{craft_patterns[index]}\", null)")
+        lines.append(f"({index}, '{craft_patterns[index]}', null)")
 
     for index in smelting_time:
         lines.append(f"({index}, null, {smelting_time[index]})")
@@ -620,7 +644,7 @@ with open("sql/item_tag_data.sql", "w") as file:
 
     for tag_id in tags_to_items:
         for item_id in tags_to_items[tag_id]:
-            lines.append(f"({tag_id}, {item_id})")
+            lines.append(f"({item_id}, {tag_id})")
 
     for i in range(len(lines) - 1):
         lines[i] += ",\n"
@@ -642,7 +666,7 @@ with open("sql/ingredients_data.sql", "w") as file:
             key = chr(ord('a') + shapeless_keys[craft_id])
             shapeless_keys[craft_id] += 1
 
-        file.write(f'({craft_id}, \'{key}\', {flag}, {item_id}, {tag_id})')
+        file.write(f"({craft_id}, '{key}', {flag}, {item_id}, {tag_id})")
 
         if index == len(ingredients) - 1:
             file.write(";\n")
