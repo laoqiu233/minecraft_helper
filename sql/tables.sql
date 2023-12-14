@@ -94,8 +94,8 @@ CREATE TABLE IF NOT EXISTS biome_structure (
 -- Drop tables 
 CREATE TABLE IF NOT EXISTS chest_drop_table (
     id SERIAL PRIMARY KEY,
-    structure INTEGER REFERENCES structure(id) NOT NULL,
-    item INTEGER REFERENCES item(id) NOT NULL,
+    structure_id INTEGER REFERENCES structure(id) NOT NULL,
+    item_id INTEGER REFERENCES item(id) NOT NULL,
     amount INTEGER NOT NULL,
     probability INTEGER NOT NULL, -- In percents from 0 to 100
     metadata json
@@ -103,8 +103,8 @@ CREATE TABLE IF NOT EXISTS chest_drop_table (
 
 CREATE TABLE IF NOT EXISTS mob_drop_table (
     id SERIAL PRIMARY KEY,
-    mob INTEGER REFERENCES mob(id) NOT NULL,
-    item INTEGER REFERENCES item(id) NOT NULL,
+    mob_id INTEGER REFERENCES mob(id) NOT NULL,
+    item_id INTEGER REFERENCES item(id) NOT NULL,
     amount INTEGER NOT NULL,
     probability INTEGER NOT NULL, -- In percents from 0 to 100
     metadata json
@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS mob_drop_table (
 
 CREATE TABLE IF NOT EXISTS fishing_drop_table (
     id SERIAL PRIMARY KEY,
-    item INTEGER REFERENCES item(id) NOT NULL,
+    item_id INTEGER REFERENCES item(id) NOT NULL,
     amount INTEGER NOT NULL,
     probability INTEGER NOT NULL, -- In percents from 0 to 100
     metadata json
@@ -120,8 +120,8 @@ CREATE TABLE IF NOT EXISTS fishing_drop_table (
 
 CREATE TABLE IF NOT EXISTS biome_drop_table (
     id SERIAL PRIMARY KEY,
-    biome INTEGER REFERENCES biome(id) NOT NULL,
-    item INTEGER REFERENCES item(id) NOT NULL,
+    biome_id INTEGER REFERENCES biome(id) NOT NULL,
+    item_id INTEGER REFERENCES item(id) NOT NULL,
     amount INTEGER NOT NULL,
     probability INTEGER NOT NULL, -- In percents from 0 to 100
     metadata json

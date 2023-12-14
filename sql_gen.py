@@ -267,8 +267,185 @@ for file_name in os.listdir("./minecraft/worldgen/structure"):
                 mobs_info[mob_id] = (mob_hp.get(mob_name, 20), player_realtion)
                 put_mob_to_structure(mob_id, structure_id)
 
+# Drop tables
+                
+def parse_table(data):
+    drops = []
+    total_weight = 0
+
+    for pool in data.get("pools", []):
+        for entry in pool["entries"]:
+            if entry["type"] == "minecraft:empty":
+                total_weight += entry.get("weight", 1)
+                continue
+            item_id = parse_item(entry["name"])
+            count = 1
+            weight = entry.get("weight", 1)
+            total_weight += weight
+
+            for function in entry.get("functions", []):
+                if function["function"] == "minecraft:set_count":
+                    if type(function["count"]) is float:
+                        count = round(function["count"])
+                    else:
+                        count = function["count"]["max"]
+            
+            drops.append((item_id, count, weight))
+
+    for index, (item_id, count, weight) in enumerate(drops):
+        drops[index] = (item_id, round(count), round(weight / total_weight * 100))
+
+    return drops
+                
+structure_to_file_names = {
+    "stronghold": [
+        "stronghold_corridor.json",
+        "stronghold_crossing.json",
+        "stronghold_library.json"
+    ],
+    "mineshaft": [
+        "abandoned_mineshaft.json"
+    ],
+    "ancient_city": [
+        "ancient_city_ice_box.json",
+        "ancient_city.json"
+    ],
+    "bastion_remnant": [
+        "bastion_bridge.json",
+        "bastion_hoglin_stable.json",
+        "bastion_other.json",
+        "bastion_treasure.json"
+    ],
+    "desert_pyramid": [
+        "desert_pyramid.json"
+    ],
+    "igloo": [
+        "igloo_chest.json"
+    ],
+    "ruined_portal": [
+        "ruined_portal.json"
+    ],
+    "ruined_portal_ocean": [
+        "ruined_portal.json"
+    ],
+    "end_city": [
+        "end_city_treasure.json"
+    ],
+    "mansion": [
+        "woodland_mansion.json"
+    ],
+}
+
+structure_drops = []
+
+for structure in structure_to_file_names:
+    structure_id = parse_structure(structure)
+
+    for file_name in structure_to_file_names[structure]:
+        with open(f"./minecraft/loot_tables/chests/{file_name}") as file:
+            data = json.load(file)
+            structure_drops += [(structure_id,) + row for row in parse_table(data)]
+
+mob_drops = []
+
+for file_name in filter(lambda x: x.endswith(".json"), os.listdir("./minecraft/loot_tables/entities")):
+    with open(f"./minecraft/loot_tables/entities/{file_name}") as file:
+        mob_id = parse_mob("minecraft:" + file_name[:-5])
+        if mob_id not in mobs_info:
+            mobs_info[mob_id] = (mob_hp.get(mob_name, 20), 0)
+        data = json.load(file)
+        mob_drops += [(mob_id, ) + row for row in parse_table(data)]
+
+fishing_drops = []
+
+for file_name in os.listdir("./minecraft/loot_tables/gameplay/fishing"):
+    with open(f"./minecraft/loot_tables/gameplay/fishing/{file_name}") as file:
+        data = json.load(file)
+        fishing_drops += parse_table(data)
+
+gift_files = list(filter(lambda x: x.endswith(".json"), os.listdir("./minecraft/loot_tables/gameplay")))
+gift_files += ["hero_of_the_village/" + file_name for file_name in os.listdir("./minecraft/loot_tables/gameplay/hero_of_the_village")]
+
+gift_drops = []
+
+for file_name in gift_files:
+    with open(f"./minecraft/loot_tables/gameplay/{file_name}") as file:
+        gift_source_name = " ".join([part.capitalize() for part in file_name[:-5].replace("/", ":_").split("_")])
+        data = json.load(file)
+        gift_drops += [(gift_source_name,) + row for row in parse_table(data)]
+
+# todo: find proper biome drops data
+
+biome_drops_names = {
+    "minecraft:bamboo_jungle": [
+        "minecraft:bamboo"
+    ]
+}
+
+biome_drops = []
+
+for biome in biome_drops_names:
+    for item in biome_drops_names[biome]:
+        biome_id = parse_biome(biome)
+        item_id = parse_item(item)
+        biome_drops.append((biome_id, item_id))
 
 # Format scripts
+                
+with open("sql/chest_drop_tables_data.sql", "w") as file:
+    file.write("INSERT INTO chest_drop_table (id, structure_id, item_id, amount, probability) VALUES\n")
+
+    for index, (sid, item_id, count, weight) in enumerate(structure_drops):
+        file.write(f'({index}, {sid}, {item_id}, {count}, {weight})')
+
+        if index == len(structure_drops) - 1:
+            file.write(";\n")
+        else:
+            file.write(",\n")
+
+with open("sql/mob_drop_tables_data.sql", "w") as file:
+    file.write("INSERT INTO mob_drop_table (id, mob_id, item_id, amount, probability) VALUES \n")
+
+    for index, (mid, item_id, count, weight) in enumerate(mob_drops):
+        file.write(f'({index}, {mid}, {item_id}, {count}, {weight})')
+
+        if index == len(mob_drops) - 1:
+            file.write(";\n")
+        else:
+            file.write(",\n")
+
+with open("sql/fishing_drop_tables_data.sql", "w") as file:
+    file.write("INSERT INTO fishing_drop_table (id, item_id, amount, probability) VALUES \n")
+
+    for index, (item_id, count, weight) in enumerate(fishing_drops):
+        file.write(f'({index}, {item_id}, {count}, {weight})')
+
+        if index == len(fishing_drops) - 1:
+            file.write(";\n")
+        else:
+            file.write(",\n")
+
+with open("sql/gift_drop_tables_data.sql", "w") as file:
+    file.write("INSERT INTO gift_drop_table (id, gift_source, item_id, amount, probability) VALUES\n")
+
+    for index, (gift_source, item_id, amount, probability) in enumerate(gift_drops):
+        file.write(f'({index}, "{gift_source}", {item_id}, {count}, {weight})')
+
+        if index == len(gift_drops) - 1:
+            file.write(";\n")
+        else:
+            file.write(",\n")
+
+with open("sql/biome_drop_tables_data.sql", "w") as file:
+    file.write("INSERT INTO biome_drop_table (id, biome_id, item_id, amount, probability) VALUES\n")
+
+    for index, (biome_id, item_id) in enumerate(biome_drops):
+        file.write(f'({index}, {biome_id}, {item_id}, 1, 100)')
+
+        if index == len(biome_drops) - 1:
+            file.write(";\n")
+        else:
+            file.write(",\n")
 
 with open("sql/dimensions_data.sql", "w") as file:
     file.write("INSERT INTO dimension (id, name, image, description) VALUES \n")
@@ -457,8 +634,6 @@ with open("sql/ingredients_data.sql", "w") as file:
     shapeless_keys = {}
 
     for index, (craft_id, key, flag, item_id, tag_id) in enumerate(ingredients):
-        item_id = quote_if_not_null(item_id)
-        tag_id = quote_if_not_null(tag_id)
         flag = "true" if flag else "false"
 
         if key == 'null':
