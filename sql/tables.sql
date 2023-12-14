@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS mob (
     name VARCHAR NOT NULL,
     image VARCHAR NOT NULL,
     hp INTEGER NOT NULL,
-    player_relation INTEGER NOT NULL
+    player_relation INTEGER NOT NULL -- 0 is friendly, 1 is neutral, 2 is aggressive
 );
 
 CREATE TABLE IF NOT EXISTS biome_mob (

@@ -120,6 +120,262 @@ for index, file_name in enumerate(os.listdir("./minecraft/recipes")):
             (index, result_item_id, result_item_amount, craft_type, category, group)
         )
 
+
+# Biome tags
+
+biome_tags = {}        
+
+for file_name in filter(lambda x: x.endswith(".json"), os.listdir("./minecraft/tags/worldgen/biome")):
+    tag_name = "#minecraft:" + file_name[:-5]
+    
+    with open(f"./minecraft/tags/worldgen/biome/{file_name}") as file:
+        data = json.load(file)
+        biome_tags[tag_name] = set(data["values"])
+
+for file_name in os.listdir("./minecraft/tags/worldgen/biome/has_structure"):
+    tag_name = "#minecraft:has_structure/" + file_name[:-5]
+    
+    with open(f"./minecraft/tags/worldgen/biome/has_structure/{file_name}") as file:
+        data = json.load(file)
+        biome_tags[tag_name] = set(data["values"])
+
+def find_biome_tags(tag):
+    res = set(biome_tags[tag])
+    for i in list(res):
+        if i[0] == '#':
+            res.remove(i)
+            for biome in find_biome_tags(i):
+                res.add(biome)
+    return res
+
+for tag in biome_tags:
+    biome_tags[tag] = find_biome_tags(tag)
+
+tag_to_dimension = {
+    "#minecraft:is_overworld": "overworld",
+    "#minecraft:is_nether": "the_nether",
+    "#minecraft:is_end": "the_end"
+}
+
+# World
+
+dimensions = {}
+
+def parse_dimension(dimension_name):
+    if dimension_name not in dimensions:
+        dimensions[dimension_name] = len(dimensions) + 1
+    return dimensions[dimension_name]
+
+for index, file_name in enumerate(os.listdir("./minecraft/dimension_type")):
+    with open(f"./minecraft/dimension_type/{file_name}") as file:
+        data = json.load(file)
+        dimension_name = file_name[:-5]
+        parse_dimension(dimension_name)
+
+biomes = {}
+biomes_to_dimension = {}
+mobs = {}
+mobs_info = {}
+mobs_to_biomes = {}
+
+def parse_biome(biome_name):
+    if biome_name not in biomes:
+        biomes[biome_name] = len(biomes) + 1
+    return biomes[biome_name]
+
+def parse_mob(mob_name):
+    if mob_name not in mobs:
+        mobs[mob_name] = len(mobs) + 1
+
+    return mobs[mob_name]
+
+def put_mob_to_biome(mob_id, biome_id):
+    if mob_id not in mobs_to_biomes:
+        mobs_to_biomes[mob_id] = set()
+
+    mobs_to_biomes[mob_id].add(biome_id)
+
+mob_hp = {}
+
+for file_name in os.listdir("./minecraft/worldgen/biome"):
+    with open(f"./minecraft/worldgen/biome/{file_name}") as file:
+        data = json.load(file)
+        biome_name = "minecraft:" + file_name[:-5]
+        biome_id = parse_biome(biome_name)
+
+        for spawner in data["spawners"]:
+            for mob in data["spawners"][spawner]:
+                mob_name = mob["type"]
+                mob_id = parse_mob(mob_name)
+
+                player_realtion = 0
+                if spawner == "monster":
+                    player_realtion = 2
+
+                mobs_info[mob_id] = (mob_hp.get(mob_name, 20), player_realtion)
+                put_mob_to_biome(mob_id, biome_id)
+
+        for dimension_tag in tag_to_dimension:
+            if biome_name in biome_tags[dimension_tag]:
+                biomes_to_dimension[biome_id] = parse_dimension(tag_to_dimension[dimension_tag])
+                break
+        else:
+            biomes_to_dimension[biome_id] = parse_dimension("unknown_dimension")
+
+structures = {}
+structure_to_biomes = {}
+mob_in_structures = {}
+
+def parse_structure(structure_name):
+    if structure_name not in structures:
+        structures[structure_name] = len(structures) + 1
+
+    return structures[structure_name]
+
+def put_structure_to_biome(structure_id, biome_id):
+    if structure_id not in structure_to_biomes:
+        structure_to_biomes[structure_id] = set()
+
+    structure_to_biomes[structure_id].add(biome_id)
+
+def put_mob_to_structure(mob_id, structure_id):
+    if mob_id not in mob_in_structures:
+        mob_in_structures[mob_id] = set()
+        
+    mob_in_structures[mob_id].add(structure_id)
+
+for file_name in os.listdir("./minecraft/worldgen/structure"):
+    structure_name = file_name[:-5]
+    structure_id = parse_structure(structure_name)
+    with open(f"./minecraft/worldgen/structure/{file_name}") as file:
+        data = json.load(file)
+
+        structure_biomes_tag = data["biomes"]
+        for biome in biome_tags[structure_biomes_tag]:
+            biome_id = parse_biome(biome)
+            put_structure_to_biome(structure_id, biome_id)
+
+        for spawner in data["spawn_overrides"]:
+            for mob in data["spawn_overrides"][spawner]["spawns"]:
+                mob_name = mob["type"]
+                mob_id = parse_mob(mob_name)
+
+                player_realtion = 0
+                if spawner == "monster":
+                    player_realtion = 2
+
+                mobs_info[mob_id] = (mob_hp.get(mob_name, 20), player_realtion)
+                put_mob_to_structure(mob_id, structure_id)
+
+with open("sql/dimensions_data.sql", "w") as file:
+    file.write("INSERT INTO dimension (id, name, image, description) VALUES \n")
+
+    for index, dimension in enumerate(dimensions):
+        dimension_id = dimensions[dimension]
+        dimension_name = " ".join([part.capitalize() for part in dimension.split("_")])
+        dimension_description = f"{dimension_name} dimension"
+        dimension_image = f"/dimensions/{dimension}.png"
+
+        file.write(f"({dimension_id}, \"{dimension_name}\", \"{dimension_image}\", \"{dimension_description}\")")
+
+        if index == len(dimensions) - 1:
+            file.write(";\n")
+        else:
+            file.write(",\n")
+
+with open("sql/biomes_data.sql", "w") as file:
+    file.write("INSERT INTO biome (id, name, image, description, dimension_id) VALUES\n")
+
+    for index, biome in enumerate(biomes):
+        biome_id = biomes[biome]
+        biome_name = " ".join([part.capitalize() for part in biome[10:].split("_")])
+        biome_description = f"The {biome_name} biome"
+        biome_image = f"/biomes/{biome}.png"
+        biome_dimension = biomes_to_dimension[biome_id]
+
+        file.write(f'({biome_id}, "{biome_name}", "{biome_image}", "{biome_description}", {biome_dimension})')
+
+        if index == len(biomes) - 1:
+            file.write(";\n")
+        else:
+            file.write(",\n")
+
+with open("sql/structures_data.sql", "w") as file:
+    file.write("INSERT INTO structure (id, name, image, description) VALUES\n")
+
+    for index, structure in enumerate(structures):
+        structure_id = structures[structure]
+        structure_name = " ".join([part.capitalize() for part in structure.split("_")])
+        structure_image = f"/structures/{structure}.png"
+        structure_description = f"The {structure_name} structure"
+
+        file.write(f'({structure_id}, "{structure_name}", "{structure_image}", "{structure_description}")')
+
+        if index == len(structures) - 1:
+            file.write(";\n")
+        else:
+            file.write(",\n")
+
+with open("sql/biome_structure_data.sql", "w") as file:
+    file.write("INSERT INTO biome_structure (biome_id, structure_id) VALUES\n")
+
+    lines = []
+
+    for structure_id in structure_to_biomes:
+        for biome_id in structure_to_biomes[structure_id]:
+            lines.append(
+                f"({biome_id}, {structure_id})"
+            )
+
+    for i in range(len(lines) - 1):
+        lines[i] += ",\n"
+    lines[-1] += ";\n"
+    file.writelines(lines)
+
+with open("sql/mobs_data.sql", "w") as file:
+    file.write("INSERT INTO mob (id, name, image, hp, player_relation) VALUES\n")
+
+    for index, mob in enumerate(mobs):
+        mob_id = mobs[mob]
+        mob_name = " ".join([part.capitalize() for part in mob[10:].split("_")])
+        mob_image = f"/mobs/{mob}.png"
+        mob_hp, player_realtion = mobs_info[mob_id]
+
+        file.write(f'({mob_id}, "{mob_name}", "{mob_image}", {mob_hp}, {player_realtion})')
+
+        if index == len(mobs) - 1:
+            file.write(";\n")
+        else:
+            file.write(",\n")
+
+with open("sql/biome_mob_data.sql", "w") as file:
+    file.write("INSERT INTO biome_mob (biome_id, mob_id) VALUES\n")
+
+    lines = []
+
+    for mob_id in mobs_to_biomes:
+        for biome_id in mobs_to_biomes[mob_id]:
+            lines.append(f'({biome_id}, {mob_id})')
+
+    for i in range(len(lines) - 1):
+        lines[i] += ',\n'
+    lines[-1] += ';\n'
+    file.writelines(lines)
+
+with open("sql/structure_mob_data.sql", "w") as file:
+    file.write("INSERT INTO structure_mob (structure_id, mob_id) VALUES\n")
+
+    lines = []
+
+    for mob_id in mob_in_structures:
+        for structure_id in mob_in_structures[mob_id]:
+            lines.append(f'({structure_id}, {mob_id})')
+
+    for i in range(len(lines) - 1):
+        lines[i] += ',\n'
+    lines[-1] += ';\n'
+    file.writelines(lines)
+
 with open("sql/tags_data.sql", "w") as file:
     file.write("INSERT INTO tag (id, name) VALUES\n")
     
@@ -152,7 +408,7 @@ with open("sql/recipes_data.sql", "w") as file:
         category = quote_if_not_null(category)
         group = quote_if_not_null(group)
 
-        file.write(f"({index}, {result_item_id}, {result_item_amount}, {category}, {group})")
+        file.write(f"({index}, {result_item_id}, {result_item_amount}, \"{craft_type}\", {category}, {group})")
 
         if index == len(recipes) - 1:
             file.write(";\n")
