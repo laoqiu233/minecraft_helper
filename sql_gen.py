@@ -625,7 +625,7 @@ with open("sql/recipes_extra_data.sql", "w") as file:
     lines = []
 
     for index in craft_patterns:
-        lines.append(f"({index}, '{craft_patterns[index]}', null)")
+        lines.append(f"({index}, E'{craft_patterns[index]}', null)")
 
     for index in smelting_time:
         lines.append(f"({index}, null, {smelting_time[index]})")

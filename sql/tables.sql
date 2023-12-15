@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS recipe (
     result_amount INTEGER NOT NULL,
     craft_type VARCHAR NOT NULL,
     craft_category VARCHAR,
-    craft_group VARCHAR
+    craft_group VARCHAR,
+    like_ratio NUMERIC
 );
 
 CREATE TABLE IF NOT EXISTS ingredient (
@@ -38,7 +39,9 @@ CREATE TABLE IF NOT EXISTS ingredient (
 CREATE TABLE IF NOT EXISTS recipe_extra_data (
     id INTEGER REFERENCES recipe(id) PRIMARY KEY,
     craft_pattern VARCHAR,
-    smelt_time INTEGER
+    smelt_time INTEGER,
+    CONSTRAINT not_shaped_and_smelting CHECK (NOT (craft_pattern IS NOT null AND smelt_time IS NOT NULL)),
+    CONSTRAINT valid_extra_data CHECK (craft_pattern IS null OR smelt_time IS null)
 );
 
 -- World
@@ -134,4 +137,20 @@ CREATE TABLE IF NOT EXISTS gift_drop_table (
     amount INTEGER NOT NULL,
     probability INTEGER NOT NULL, -- In percents from 0 to 100,
     metadata json
+);
+
+-- Users
+
+CREATE TABLE IF NOT EXISTS "user" (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR UNIQUE NOT NULL,
+    password VARCHAR NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS user_recipe_like (
+    user_id INTEGER REFERENCES "user"(id),
+    recipe_id INTEGER REFERENCES recipe(id),
+    is_like BOOLEAN NOT NULL,
+    ts TIMESTAMP NOT NULL,
+    PRIMARY KEY (user_id, recipe_id)
 );

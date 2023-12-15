@@ -20,3 +20,9 @@
 \i /sql/fishing_drop_tables_data.sql
 \i /sql/gift_drop_tables_data.sql
 \i /sql/mob_drop_tables_data.sql
+
+\i /sql/triggers.sql
+
+INSERT INTO "user" (username, password) VALUES
+('dmitrik', '123456'),
+('rodionik', 'big_bebra');
