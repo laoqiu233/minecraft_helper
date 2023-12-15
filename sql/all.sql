@@ -22,6 +22,7 @@
 \i /sql/mob_drop_tables_data.sql
 
 \i /sql/triggers.sql
+\i /sql/functions.sql
 
 INSERT INTO "user" (username, password) VALUES
 ('dmitrik', '123456'),

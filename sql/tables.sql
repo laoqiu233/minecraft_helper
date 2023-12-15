@@ -148,8 +148,8 @@ CREATE TABLE IF NOT EXISTS "user" (
 );
 
 CREATE TABLE IF NOT EXISTS user_recipe_like (
-    user_id INTEGER REFERENCES "user"(id),
-    recipe_id INTEGER REFERENCES recipe(id),
+    user_id INTEGER REFERENCES "user"(id) ON DELETE CASCADE,
+    recipe_id INTEGER REFERENCES recipe(id) ON DELETE CASCADE,
     is_like BOOLEAN NOT NULL,
     ts TIMESTAMP NOT NULL,
     PRIMARY KEY (user_id, recipe_id)

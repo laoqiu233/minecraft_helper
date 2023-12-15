@@ -19,6 +19,20 @@ DROP FUNCTION IF EXISTS update_shaped_craft_type;
 DROP TRIGGER IF EXISTS update_smelting_craft_type ON recipe_extra_data;
 DROP FUNCTION IF EXISTS update_smelting_craft_type;
 
+DROP FUNCTION IF EXISTS most_liked_recipe_of_the_day;
+
+DROP FUNCTION IF EXISTS delete_haters;
+
+DROP FUNCTION IF EXISTS get_all_ingredients_of_recipe;
+
+DROP FUNCTION IF EXISTS find_recipes_by_ingredients;
+
+DROP FUNCTION IF EXISTS find_next_recipes;
+
+DROP FUNCTION IF EXISTS find_structure_loot;
+
+DROP FUNCTION IF EXISTS find_mob_loot;
+
 DROP TABLE IF EXISTS user_recipe_like;
 DROP TABLE IF EXISTS "user";
 
