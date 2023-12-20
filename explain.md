@@ -63,12 +63,34 @@ SELECT array_agg(item_id) as loot_id
 ```
 
 
+# EXPLAIN index on `chest_drop_table`
+```sql
+CREATE INDEX chest_drop_table_item_id_index ON chest_drop_table USING hash(item_id);
+```
+## function
+`find_structures_with_loot(10)`
+```sql
+SELECT structure_id
+        FROM chest_drop_table
+        WHERE chest_drop_table.item_id = 10;
+```
+## explain result
+```
+                                         QUERY PLAN
+---------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on chest_drop_table  (cost=4.02..9.85 rows=2 width=4)
+   Recheck Cond: (item_id = 10)
+   ->  Bitmap Index Scan on chest_drop_table_item_id_index  (cost=0.00..4.01 rows=2 width=0)
+         Index Cond: (item_id = 10)
+```
+
+
 # EXPLAIN index on `mob_drop_table`
 ```sql
 CREATE INDEX mob_drop_table_mob_id_index ON mob_drop_table USING hash(mob_id);
 ```
 ## function
-`find_mob_loot(20)`
+`find_structure_with_loot(20)`
 ```sql
 SELECT array_agg(item_id) as loot_id
       FROM mob_drop_table
@@ -85,10 +107,29 @@ SELECT array_agg(item_id) as loot_id
                Index Cond: (mob_id = 20)
 ```
 
+# EXPLAIN index on `mob_drop_table`
+```sql
+CREATE INDEX mob_drop_table_item_id_index ON mob_drop_table USING hash(item_id);
+```
+## function
+`find_mob_with_loot(8)`
+```sql
+SELECT mob_id
+      FROM mob_drop_table
+      WHERE mob_drop_table.item_id = 8;
+```
+## explain result
+```
+                                            QUERY PLAN
+---------------------------------------------------------------------------------------------------
+ Index Scan using mob_drop_table_item_id_index on mob_drop_table  (cost=0.00..8.02 rows=1 width=4)
+   Index Cond: (item_id = 8)
+```
 
 # EXPLAIN index on `ingredient`
 ```sql
 CREATE INDEX ingredient_item_id_index ON ingredient USING hash(item_id);
+CREATE INDEX ingredient_tag_id_index ON ingredient USING hash(tag_id);
 ```
 ## function
 `get_all_ingredients_of_recipe(13)`
@@ -108,7 +149,30 @@ SELECT array_agg(item_id) as recipe_ingredients
        WHERE craft_id = 13
    );
 ```
-## explain result
+## explain result without index on tag_id
+```
+                              QUERY PLAN
+-----------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=66.71..66.72 rows=1 width=32)
+   ->  HashAggregate  (cost=66.44..66.56 rows=12 width=8)
+         Group Key: ingredient.craft_id, ingredient.item_id
+         ->  Append  (cost=4.33..66.38 rows=12 width=8)
+               ->  Bitmap Heap Scan on ingredient  (cost=4.33..12.56 rows=1 width=8)
+                     Recheck Cond: (craft_id = 13)
+                     Filter: (tag_id IS NULL)
+                     ->  Bitmap Index Scan on ingredient_pkey  (cost=0.00..4.33 rows=7 width=0)
+                           Index Cond: (craft_id = 13)
+               ->  Hash Join  (cost=12.57..53.76 rows=11 width=8)
+                     Hash Cond: (item_tag.tag_id = ingredient_1.tag_id)
+                     ->  Seq Scan on item_tag  (cost=0.00..32.60 rows=2260 width=8)
+                     ->  Hash  (cost=12.56..12.56 rows=1 width=8)
+                           ->  Bitmap Heap Scan on ingredient ingredient_1  (cost=4.33..12.56 rows=1 width=8)
+                                 Recheck Cond: (craft_id = 13)
+                                 Filter: (item_id IS NULL)
+                                 ->  Bitmap Index Scan on ingredient_pkey  (cost=0.00..4.33 rows=7 width=0)
+                                       Index Cond: (craft_id = 13)
+```
+## explain result with index on tag_id
 ```
                               QUERY PLAN
 -----------------------------------------------------------------------------------------------------------------------------------
@@ -129,7 +193,6 @@ SELECT array_agg(item_id) as recipe_ingredients
                                        Filter: (item_id IS NULL)
 ```
 
-
 # EXPLAIN index on `recipe`
 ```sql
 CREATE INDEX recipe_like_ratio_index ON recipe USING btree(like_ratio);
@@ -138,7 +201,7 @@ CREATE INDEX recipe_like_ratio_index ON recipe USING btree(like_ratio);
 `find_top_recipes(10)`
 ```sql
 select * from recipe 
-      order by like_ratio DESC limit 10;
+      order by like_ratio DESC limit 10x``;
 ```
 ## explain result
 ```
