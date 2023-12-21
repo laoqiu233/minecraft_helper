@@ -1,5 +1,9 @@
 import os
 import json
+from random import randint, random;
+
+# Test data for indexes to work flag
+TEST_DATA_FLAG = True
 
 # Recipe gen
 
@@ -422,10 +426,21 @@ with open("sql/chest_drop_tables_data.sql", "w") as file:
     for index, (sid, item_id, count, weight) in enumerate(structure_drops):
         file.write(f'({index}, {sid}, {item_id}, {count}, {weight})')
 
-        if index == len(structure_drops) - 1:
+        if index == len(structure_drops) - 1 and not TEST_DATA_FLAG:
             file.write(";\n")
         else:
             file.write(",\n")
+
+    # Add 500 test values
+    if TEST_DATA_FLAG:
+        for i in range(index + 1, index + 2000):
+            file.write(f'({i}, {randint(1, 33)}, {randint(1, 1000)}, {randint(1, 11)}, {randint(1, 30)})')
+
+            if i == index + 1999:
+                file.write(";\n")
+            else:
+                file.write(",\n")
+
 
 with open("sql/mob_drop_tables_data.sql", "w") as file:
     file.write("INSERT INTO mob_drop_table (id, mob_id, item_id, amount, probability) VALUES \n")
@@ -433,10 +448,20 @@ with open("sql/mob_drop_tables_data.sql", "w") as file:
     for index, (mid, item_id, count, weight) in enumerate(mob_drops):
         file.write(f'({index}, {mid}, {item_id}, {count}, {weight})')
 
-        if index == len(mob_drops) - 1:
+        if index == len(mob_drops) - 1 and not TEST_DATA_FLAG:
             file.write(";\n")
         else:
             file.write(",\n")
+
+    # Add 500 test values
+    if TEST_DATA_FLAG:
+        for i in range(index + 1, index + 500):
+            file.write(f'({i}, {randint(1, 81)}, {randint(1, 1000)}, {randint(1, 11)}, {randint(1, 30)})')
+
+            if i == index + 499:
+                file.write(";\n")
+            else:
+                file.write(",\n")
 
 with open("sql/fishing_drop_tables_data.sql", "w") as file:
     file.write("INSERT INTO fishing_drop_table (id, item_id, amount, probability) VALUES \n")
@@ -605,14 +630,21 @@ with open("sql/items_data.sql", "w") as file:
             file.write(",\n")
 
 with open("sql/recipes_data.sql", "w") as file:
-    file.write("INSERT INTO recipe (id, result_item, result_amount, craft_type, craft_category, craft_group) VALUES \n")
-
+    if TEST_DATA_FLAG:
+        file.write("INSERT INTO recipe (id, result_item, result_amount, craft_type, craft_category, craft_group, like_ratio) VALUES \n")
+    else:
+        file.write("INSERT INTO recipe (id, result_item, result_amount, craft_type, craft_category, craft_group) VALUES \n")
+    
     for real_index, recipe in enumerate(recipes):
         index, result_item_id, result_item_amount, craft_type, category, group = recipe
         category = quote_if_not_null(category)
         group = quote_if_not_null(group)
 
-        file.write(f"({index}, {result_item_id}, {result_item_amount}, '{craft_type}', {category}, {group})")
+        if TEST_DATA_FLAG:
+            like_ratio = round(random() * 10, 2);
+            file.write(f"({index}, {result_item_id}, {result_item_amount}, '{craft_type}', {category}, {group}, {like_ratio})")
+        else:
+            file.write(f"({index}, {result_item_id}, {result_item_amount}, '{craft_type}', {category}, {group})")
 
         if real_index == len(recipes) - 1:
             file.write(";\n")
