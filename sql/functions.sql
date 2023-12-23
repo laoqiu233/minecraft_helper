@@ -45,10 +45,10 @@ CREATE OR REPLACE FUNCTION get_all_ingredients_of_recipe(recipe_id INTEGER) RETU
 DECLARE
     result INTEGER[];
 BEGIN
-    SELECT array_agg(item_id) as recipe_ingredients
+    SELECT array_agg(ings2.item_id) as recipe_ingredients
         FROM 
         (
-            SELECT craft_id, item_id FROM
+            SELECT ings.craft_id, ings.item_id FROM
             (
                 SELECT craft_id, item_id FROM ingredient WHERE tag_id IS null
                 UNION
@@ -56,9 +56,8 @@ BEGIN
                 FROM ingredient
                 JOIN item_tag ON ingredient.tag_id = item_tag.tag_id
                 WHERE ingredient.item_id IS null
-            )
-            WHERE craft_id = recipe_id
-        )
+            ) AS ings WHERE ings.craft_id = recipe_id
+        ) AS ings2 
         INTO result;
     RETURN result;
 END;

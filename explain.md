@@ -129,68 +129,27 @@ SELECT mob_id
 # EXPLAIN index on `ingredient`
 ```sql
 CREATE INDEX ingredient_item_id_index ON ingredient USING hash(item_id);
-CREATE INDEX ingredient_tag_id_index ON ingredient USING hash(tag_id);
 ```
 ## function
-`get_all_ingredients_of_recipe(13)`
 ```sql
-SELECT array_agg(item_id) as recipe_ingredients
-   FROM 
-   (
-       SELECT craft_id, item_id FROM
-       (
-           SELECT craft_id, item_id FROM ingredient WHERE tag_id IS null
-           UNION
-           SELECT craft_id, item_tag.item_id as item_id 
-           FROM ingredient
-           JOIN item_tag ON ingredient.tag_id = item_tag.tag_id
-           WHERE ingredient.item_id IS null
-       )
-       WHERE craft_id = 13
-   );
+SELECT array_agg(recipe.result_item)
+FROM ingredient
+JOIN recipe ON recipe.id = ingredient.craft_id
+WHERE ingredient.item_id = 6;
 ```
-## explain result without index on tag_id
+## explain result with index on item id
 ```
                               QUERY PLAN
 -----------------------------------------------------------------------------------------------------------------------------------
- Aggregate  (cost=66.71..66.72 rows=1 width=32)
-   ->  HashAggregate  (cost=66.44..66.56 rows=12 width=8)
-         Group Key: ingredient.craft_id, ingredient.item_id
-         ->  Append  (cost=4.33..66.38 rows=12 width=8)
-               ->  Bitmap Heap Scan on ingredient  (cost=4.33..12.56 rows=1 width=8)
-                     Recheck Cond: (craft_id = 13)
-                     Filter: (tag_id IS NULL)
-                     ->  Bitmap Index Scan on ingredient_pkey  (cost=0.00..4.33 rows=7 width=0)
-                           Index Cond: (craft_id = 13)
-               ->  Hash Join  (cost=12.57..53.76 rows=11 width=8)
-                     Hash Cond: (item_tag.tag_id = ingredient_1.tag_id)
-                     ->  Seq Scan on item_tag  (cost=0.00..32.60 rows=2260 width=8)
-                     ->  Hash  (cost=12.56..12.56 rows=1 width=8)
-                           ->  Bitmap Heap Scan on ingredient ingredient_1  (cost=4.33..12.56 rows=1 width=8)
-                                 Recheck Cond: (craft_id = 13)
-                                 Filter: (item_id IS NULL)
-                                 ->  Bitmap Index Scan on ingredient_pkey  (cost=0.00..4.33 rows=7 width=0)
-                                       Index Cond: (craft_id = 13)
-```
-## explain result with index on tag_id
-```
-                              QUERY PLAN
------------------------------------------------------------------------------------------------------------------------------------
- Aggregate  (cost=31.98..31.99 rows=1 width=32)
-   ->  Unique  (cost=31.94..31.95 rows=2 width=8)
-         ->  Sort  (cost=31.94..31.94 rows=2 width=8)
-               Sort Key: ingredient.craft_id, ingredient.item_id
-               ->  Append  (cost=0.28..31.93 rows=2 width=8)
-                     ->  Index Scan using ingredient_pkey on ingredient  (cost=0.28..8.29 rows=1 width=8)
-                           Index Cond: (craft_id = 13)
-                           Filter: (tag_id IS NULL)
-                     ->  Hash Join  (cost=8.31..23.62 rows=1 width=8)
-                           Hash Cond: (item_tag.tag_id = ingredient_1.tag_id)
-                           ->  Seq Scan on item_tag  (cost=0.00..12.22 rows=822 width=8)
-                           ->  Hash  (cost=8.29..8.29 rows=1 width=8)
-                                 ->  Index Scan using ingredient_pkey on ingredient ingredient_1  (cost=0.28..8.29 rows=1 width=8)
-                                       Index Cond: (craft_id = 13)
-                                       Filter: (item_id IS NULL)
+Aggregate  (cost=50.55..50.56 rows=1 width=32)
+   ->  Hash Join  (cost=12.68..50.52 rows=10 width=4)
+         Hash Cond: (recipe.id = ingredient.craft_id)
+         ->  Seq Scan on recipe  (cost=0.00..23.44 rows=1144 width=8)
+         ->  Hash  (cost=12.56..12.56 rows=10 width=4)
+               ->  Bitmap Heap Scan on ingredient  (cost=4.08..12.56 rows=10 width=4)
+                     Recheck Cond: (item_id = 6)
+                     ->  Bitmap Index Scan on ingredient_item_id_index  (cost=0.00..4.08 rows=10 width=0)
+                           Index Cond: (item_id = 6)
 ```
 
 # EXPLAIN index on `recipe`
@@ -201,7 +160,7 @@ CREATE INDEX recipe_like_ratio_index ON recipe USING btree(like_ratio);
 `find_top_recipes(10)`
 ```sql
 select * from recipe 
-      order by like_ratio DESC limit 10x``;
+      order by like_ratio DESC limit 10;
 ```
 ## explain result
 ```
