@@ -10,3 +10,7 @@ lazy val root = (project in file("."))
 
 libraryDependencies += "dev.zio" %% "zio" % "2.0.20"
 libraryDependencies += "dev.zio" %% "zio-http" % "3.0.0-RC4"
+libraryDependencies += "dev.zio" %% "zio-jdbc" % "0.1.1"
+libraryDependencies += "dev.zio" %% "zio-json" % "0.6.2"
+libraryDependencies += "com.github.pureconfig" %% "pureconfig" % "0.17.4"
+libraryDependencies += "org.postgresql" % "postgresql" % "42.7.1"

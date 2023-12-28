@@ -5,3 +5,5 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - ./sql:/sql
+    ports:
+      - 5432:5432
