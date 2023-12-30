@@ -1,10 +1,12 @@
 package io.dmtri.minecraft
 package models
 
-import zio.json.{DeriveJsonEncoder, JsonEncoder}
+import io.circe.Encoder
+import io.circe.generic.semiauto.deriveEncoder
+
 
 case class Item (id: Int, name: String, image: String)
 
 object Item {
-  implicit val encoder: JsonEncoder[Item] = DeriveJsonEncoder.gen[Item]
+  implicit val encoder: Encoder[Item] = deriveEncoder
 }

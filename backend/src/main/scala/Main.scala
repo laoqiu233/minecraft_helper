@@ -11,6 +11,7 @@ import zio.{Scope, ULayer, URLayer, ZIO, ZIOAppArgs, ZIOAppDefault, ZLayer}
 import zio.Console._
 import zio.jdbc.ZConnectionPool
 import io.dmtri.minecraft.models.Item._
+import io.dmtri.minecraft.models.ApiError._
 import zio.json._
 
 object Main extends ZIOAppDefault {
@@ -26,7 +27,7 @@ object Main extends ZIOAppDefault {
 
     val app = ZLayer.fromZIO(for {
       itemsHandler <- ZIO.service[ItemsHandler]
-    } yield itemsHandler.routes.handleError(err => Response.error(Status.InternalServerError, err.getMessage)).toHttpApp)
+    } yield itemsHandler.routes.handleError(encodeErrorResponse).toHttpApp)
 
     ZLayer.make[Env](
       storage,
