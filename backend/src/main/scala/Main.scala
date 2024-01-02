@@ -4,14 +4,15 @@ import io.dmtri.minecraft
 import io.dmtri.minecraft.config.Config
 import io.dmtri.minecraft.config.Config.PostgresConfig
 import io.dmtri.minecraft.postgres.PostgresConnectionPool
-import io.dmtri.minecraft.storage.ItemsStorage
-import io.dmtri.minecraft.storage.jdbc.JdbcItemsStorage
+import io.dmtri.minecraft.storage.{ItemDropStorage, ItemsStorage}
+import io.dmtri.minecraft.storage.jdbc.{JdbcItemDropStorage, JdbcItemsStorage}
 import zio.http._
 import zio.{Scope, ULayer, URLayer, ZIO, ZIOAppArgs, ZIOAppDefault, ZLayer}
 import zio.Console._
 import zio.jdbc.ZConnectionPool
 import io.dmtri.minecraft.models.Item._
 import io.dmtri.minecraft.models.ApiError._
+import io.dmtri.minecraft.models.{BiomeItemDrop, ChestItemDrop, FishingItemDrop, GiftItemDrop, MobItemDrop}
 import zio.json._
 
 object Main extends ZIOAppDefault {
@@ -19,18 +20,39 @@ object Main extends ZIOAppDefault {
     with Config
 
   private def makeEnv = {
-    val storage = ZLayer.make[ItemsStorage](
+    val pool = ZLayer.make[ZConnectionPool](
       Config.configLive,
-      PostgresConnectionPool.connectionPoolLive,
+      PostgresConnectionPool.connectionPoolLive
+    )
+
+    val itemStorage = ZLayer.make[ItemsStorage](
+      pool,
       JdbcItemsStorage.live
+    )
+
+    val itemDropStorages = ZLayer.make[
+      ItemDropStorage[BiomeItemDrop]
+      with ItemDropStorage[GiftItemDrop]
+      with ItemDropStorage[FishingItemDrop]
+      with ItemDropStorage[MobItemDrop]
+      with ItemDropStorage[ChestItemDrop]](
+      pool,
+      JdbcItemDropStorage.biomeItemDropLive,
+      JdbcItemDropStorage.giftItemDropLive,
+      JdbcItemDropStorage.fishingItemDropLive,
+      JdbcItemDropStorage.mobItemDropLive,
+      JdbcItemDropStorage.chestItemDropLive,
     )
 
     val app = ZLayer.fromZIO(for {
       itemsHandler <- ZIO.service[ItemsHandler]
-    } yield itemsHandler.routes.handleError(encodeErrorResponse).toHttpApp)
+    } yield itemsHandler.routes.handleError({ err =>
+      encodeErrorResponse(err)
+    }).toHttpApp)
 
     ZLayer.make[Env](
-      storage,
+      itemStorage,
+      itemDropStorages,
       Config.configLive,
       ItemsHandler.live,
       app
