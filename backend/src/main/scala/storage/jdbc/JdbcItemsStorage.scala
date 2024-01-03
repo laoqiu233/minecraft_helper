@@ -9,7 +9,7 @@ import zio.jdbc.{JdbcDecoder, JdbcEncoder, ZConnectionPool, sqlInterpolator, tra
 import zio.schema.{Schema, TypeId}
 import zio.schema.Schema.Field
 
-case class JdbcItemsStorage(pool: ZConnectionPool) extends ItemsStorage with JdbcStorage[Item] {
+case class JdbcItemsStorage(pool: ZConnectionPool) extends ItemsStorage with JdbcStorage {
   import JdbcItemsStorage._
 
   override def getAllItems: Task[Seq[Item]] = selectAllQuery.map(_.toSeq)

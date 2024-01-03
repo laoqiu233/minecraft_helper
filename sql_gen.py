@@ -3,7 +3,7 @@ import json
 from random import randint, random;
 
 # Test data for indexes to work flag
-TEST_DATA_FLAG = True
+TEST_DATA_FLAG = False
 
 # Recipe gen
 
@@ -110,7 +110,7 @@ for index, file_name in enumerate(os.listdir("./minecraft/recipes")):
             
             craft_patterns[index] = pattern
 
-        if craft_type == "minecraft:smelting":
+        if craft_type == "minecraft:smelting" or craft_type == "minecraft:blasting":
             smelting_time[index] = data["cookingtime"]
 
         for key in data.get("key", {}):
@@ -119,6 +119,9 @@ for index, file_name in enumerate(os.listdir("./minecraft/recipes")):
         
         for ingredient in data.get("ingredients", []):
             parse_ingredient(index, ingredient)
+
+        if "ingredient" in data:
+            parse_ingredient(index, data["ingredient"])
 
         recipes.append(
             (index, result_item_id, result_item_amount, craft_type, category, group)

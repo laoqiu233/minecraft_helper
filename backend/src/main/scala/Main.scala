@@ -4,8 +4,8 @@ import io.dmtri.minecraft
 import io.dmtri.minecraft.config.Config
 import io.dmtri.minecraft.config.Config.PostgresConfig
 import io.dmtri.minecraft.postgres.PostgresConnectionPool
-import io.dmtri.minecraft.storage.{ItemDropStorage, ItemsStorage}
-import io.dmtri.minecraft.storage.jdbc.{JdbcItemDropStorage, JdbcItemsStorage}
+import io.dmtri.minecraft.storage.{ItemDropStorage, ItemsStorage, RecipeStorage}
+import io.dmtri.minecraft.storage.jdbc.{JdbcItemDropStorage, JdbcItemsStorage, JdbcRecipeStorage}
 import zio.http._
 import zio.{Scope, ULayer, URLayer, ZIO, ZIOAppArgs, ZIOAppDefault, ZLayer}
 import zio.Console._
@@ -13,6 +13,7 @@ import zio.jdbc.ZConnectionPool
 import io.dmtri.minecraft.models.Item._
 import io.dmtri.minecraft.models.ApiError._
 import io.dmtri.minecraft.models.{BiomeItemDrop, ChestItemDrop, FishingItemDrop, GiftItemDrop, MobItemDrop}
+import io.dmtri.minecraft.services.ItemDropService
 import zio.json._
 
 object Main extends ZIOAppDefault {
@@ -44,6 +45,12 @@ object Main extends ZIOAppDefault {
       JdbcItemDropStorage.chestItemDropLive,
     )
 
+    val recipeStorage = ZLayer.make[RecipeStorage](
+      pool,
+      itemStorage,
+      JdbcRecipeStorage.live
+    )
+
     val app = ZLayer.fromZIO(for {
       itemsHandler <- ZIO.service[ItemsHandler]
     } yield itemsHandler.routes.handleError({ err =>
@@ -51,8 +58,10 @@ object Main extends ZIOAppDefault {
     }).toHttpApp)
 
     ZLayer.make[Env](
+      recipeStorage,
       itemStorage,
       itemDropStorages,
+      ItemDropService.live,
       Config.configLive,
       ItemsHandler.live,
       app

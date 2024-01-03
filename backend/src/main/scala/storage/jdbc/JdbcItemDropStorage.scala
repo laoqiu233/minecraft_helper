@@ -16,7 +16,7 @@ import zio.jdbc.{JdbcDecoder, ZConnectionPool, stringToSql, transaction}
 
 trait JdbcItemDropStorage[T <: ItemDrop]
     extends ItemDropStorage[T]
-    with JdbcStorage[T] {
+    with JdbcStorage {
   def tableName: String
   protected implicit val decoder: JdbcDecoder[T]
 

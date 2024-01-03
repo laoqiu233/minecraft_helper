@@ -1,31 +1,21 @@
 package io.dmtri.minecraft
 
-import storage.{ItemDropStorage, ItemsStorage}
+import storage.{ItemDropStorage, ItemsStorage, RecipeStorage}
 
-import io.dmtri.minecraft.models.{
-  ApiError,
-  BiomeItemDrop,
-  ChestItemDrop,
-  FishingItemDrop,
-  GiftItemDrop,
-  ItemDrops,
-  MobItemDrop
-}
-import zio.http.{Method, Request, Response, Route, Routes, Status, handler, int}
+import io.dmtri.minecraft.models.ApiError
+import zio.http.{Method, Request, Response, Route, Routes, handler, int}
 import io.dmtri.minecraft.models.Item._
-import zio.{ZIO, ZLayer}
+import zio.{URLayer, ZIO, ZLayer}
 import io.circe.syntax._
 import io.circe.generic.auto._
+import io.dmtri.minecraft.services.ItemDropService
 
 import scala.util.Try
 
 case class ItemsHandler(
     itemsStorage: ItemsStorage,
-    biomeDropsStorage: ItemDropStorage[BiomeItemDrop],
-    giftDropsStorage: ItemDropStorage[GiftItemDrop],
-    fishingDropsStroage: ItemDropStorage[FishingItemDrop],
-    mobDropsStorage: ItemDropStorage[MobItemDrop],
-    chestDropsStorage: ItemDropStorage[ChestItemDrop]
+    recipeStorage: RecipeStorage,
+    dropService: ItemDropService
 ) {
   private val findByItemIdRoute: Route[Any, ApiError] =
     Method.GET / "items" / int("itemId") -> handler {
@@ -44,16 +34,17 @@ case class ItemsHandler(
     Method.GET / "items" / int("itemId") / "drops" -> handler {
       (itemId: Int, req: Request) =>
         for {
-          drops <-
-            biomeDropsStorage.getDropsForItem(itemId) zipPar
-              giftDropsStorage.getDropsForItem(itemId) zipPar
-              fishingDropsStroage.getDropsForItem(itemId) zipPar
-              mobDropsStorage.getDropsForItem(itemId) zipPar
-              chestDropsStorage.getDropsForItem(
-                itemId
-              ) mapError (ApiError.InternalError)
-          dropsDto = (ItemDrops.apply _).tupled(drops)
-          res <- ZIO.attempt(dropsDto.asJson.toString).mapError(ApiError.InternalError)
+          drops <- dropService.getAllDropsForItem(itemId)
+          res <- ZIO.attempt(drops.asJson.toString).mapError(ApiError.InternalError)
+        } yield Response.json(res)
+    }
+
+  private val findRecipesByItemIdRoute: Route[Any, ApiError] =
+    Method.GET / "items" / int("itemId") / "recipes" -> handler {
+      (itemId: Int, req: Request) =>
+        for {
+          recipes <- recipeStorage.getRecipesForItem(itemId).mapError(ApiError.InternalError)
+          res <- ZIO.attempt(recipes.asJson.toString()).mapError(ApiError.InternalError)
         } yield Response.json(res)
     }
 
@@ -79,15 +70,12 @@ case class ItemsHandler(
   val routes: Routes[Any, ApiError] = Routes(
     findByItemIdRoute,
     listItemsRoute,
-    findDropsByItemIdRoute
+    findDropsByItemIdRoute,
+    findRecipesByItemIdRoute
   )
 }
 
 object ItemsHandler {
-  val live: ZLayer[ItemsStorage
-    with ItemDropStorage[BiomeItemDrop]
-    with ItemDropStorage[GiftItemDrop]
-    with ItemDropStorage[FishingItemDrop]
-    with ItemDropStorage[MobItemDrop]
-    with ItemDropStorage[ChestItemDrop], Nothing, ItemsHandler] = ZLayer.fromFunction(ItemsHandler.apply _)
+  private type Env = ItemsStorage with ItemDropService with RecipeStorage
+  val live: URLayer[Env, ItemsHandler] = ZLayer.fromFunction(ItemsHandler.apply _)
 }
