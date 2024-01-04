@@ -3,6 +3,7 @@ package handlers
 
 import services.{GithubOauthService, TokenService}
 
+import io.dmtri.minecraft.models.ApiError.encodeErrorResponse
 import io.dmtri.minecraft.models.{ApiError, User}
 import io.dmtri.minecraft.storage.UserStorage
 import zio.http.{HandlerAspect, Request, handler}
@@ -12,22 +13,33 @@ case class AuthService(
     userStorage: UserStorage,
     githubOauthService: GithubOauthService
 ) {
-  import AuthService._
+  private def decodeTokenFromRequest(req: Request): Either[ApiError, Int] = {
+    import AuthService._
+    val token = req.headers.get(authHeader).flatMap(extractToken)
+
+    token match {
+      case None =>
+        Left(ApiError.AuthError("invalid token"))
+      case Some(token) =>
+        tokenService.getUserIdFromToken(token).toEither.left.map(err => ApiError.AuthError(err.toString))
+    }
+  }
 
   def authAspect: HandlerAspect[Any, Int] =
     HandlerAspect.interceptIncomingHandler(handler { (req: Request) =>
-      val token = req.headers.get(authHeader).flatMap(extractToken)
-
-      token match {
-        case None =>
-          ZIO.fail(ApiError.AuthError("invalid token"))
-        case Some(token) =>
-          ZIO
-            .fromTry(tokenService.getUserIdFromToken(token))
-            .map((req, _))
-            .mapError(err => ApiError.AuthError(err.toString))
+      decodeTokenFromRequest(req) match {
+        case Left(value) => ZIO.fail(encodeErrorResponse(value))
+        case Right(value) => ZIO.succeed((req, value))
       }
-    }.mapError(ApiError.encodeErrorResponse))
+    })
+
+  def optionalAuthAspect: HandlerAspect[Any, Option[Int]] =
+    HandlerAspect.interceptIncomingHandler(handler { (req: Request) =>
+      decodeTokenFromRequest(req) match {
+        case Left(_) => ZIO.succeed((req, None))
+        case Right(value) => ZIO.succeed((req, Some(value)))
+      }
+    })
 
   def loadUserFromGithub(githubToken: String): IO[ApiError, User] = {
     for {

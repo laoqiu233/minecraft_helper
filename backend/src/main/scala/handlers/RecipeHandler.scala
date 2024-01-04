@@ -3,15 +3,11 @@ package handlers
 
 import storage.RecipeStorage
 
-import io.circe.Decoder
 import io.dmtri.minecraft.models.{ApiError, LikeStatus}
 import zio.{ZIO, ZLayer}
-import zio.http.{Method, Middleware, Request, Response, Route, Routes, handler, int}
+import zio.http.{Method, Request, Response, Route, Routes, handler, int}
 import io.circe.generic.auto._
 import io.circe.syntax._
-import io.circe.parser.decode
-import io.dmtri.minecraft.models.ApiError.encodeErrorResponse
-import io.dmtri.minecraft.services.TokenService
 
 case class RecipeHandler (recipeStorage: RecipeStorage, authService: AuthService) {
   import RecipeHandler._
@@ -46,5 +42,5 @@ case class RecipeHandler (recipeStorage: RecipeStorage, authService: AuthService
 object RecipeHandler {
   val live = ZLayer.fromFunction(RecipeHandler.apply _)
 
-  final case class RecipeLikeStatusRequest(status: LikeStatus)
+  private final case class RecipeLikeStatusRequest(status: LikeStatus)
 }
