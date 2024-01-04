@@ -34,13 +34,14 @@ object Recipe {
         id: Int,
         recipeCategory: Option[String],
         recipeGroup: Option[String],
-        shapelessIngredients: Seq[Item],
+        shapelessIngredients: Seq[Seq[Item]],
         resultItem: Item,
         resultItemAmount: Int
                               ) extends Recipe {
     override def recipeType: String = "shapeless"
 
-    override def ingredients: Map[String, Seq[Item]] = Map("SHAPELESS" -> shapelessIngredients)
+    override def ingredients: Map[String, Seq[Item]] = shapelessIngredients
+      .zipWithIndex.map(ings => s"SHAPELESS-${ings._2}" -> ings._1).toMap
   }
 
   case class Smelting(
