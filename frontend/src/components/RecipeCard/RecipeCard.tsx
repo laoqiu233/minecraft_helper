@@ -1,11 +1,11 @@
 import styles from "./RecipeCard.module.css"
-import { Cell } from "./Cell"
+import { Cell } from "../Cell/Cell"
 
-interface RecipeCardProps {
+interface RecipeTypeProps {
   recipe: RecipeUI
 }
 
-export function RecipeCard({ recipe }: RecipeCardProps) {
+export function RecipeCard({ recipe }: RecipeTypeProps) {
   let recipeBoard = recipe.ingridients.map((items, index) => {
     return <Cell items={items} />
   })

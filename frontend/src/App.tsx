@@ -1,18 +1,13 @@
 import logo from "./logo.svg"
 import "./styles.css"
-import { RecipeCard } from "./components/RecipeCard"
-import { AllItems } from "./components/AllItems"
+import { RecipeCard } from "./components/RecipeCard/RecipeCard"
+import { AllItems } from "./components/AllItems/AllItems"
 import { fetchRecipe } from "./util/RecipeApi"
 import { useEffect, useState } from "react"
+import { useAppSelector } from "./app/hooks"
 
 function App() {
-  const [recipe, setRecipe] = useState<RecipeUI | undefined>(undefined)
-
-  useEffect(() => {
-    fetchRecipe(6).then((recipe) => {
-      recipe && setRecipe(recipe)
-    })
-  })
+  const { recipe } = useAppSelector((state) => state.recipe)
 
   return (
     <div className="app">
