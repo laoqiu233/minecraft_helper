@@ -8,7 +8,7 @@ import pureconfig.error.ConfigReaderFailures
 import zio.{IO, ZIO, ZLayer}
 import pureconfig.generic.auto._
 
-case class Config(api: ApiConfig, postgres: PostgresConfig, jwt: JwtConfig)
+case class Config(api: ApiConfig, postgres: PostgresConfig, jwt: JwtConfig, oauth: OauthConfig)
 
 object Config {
   case class ApiConfig(port: Int)
@@ -20,6 +20,10 @@ object Config {
       )
   }
   case class JwtConfig(secret: String, expirationSeconds: Int, issuer: String)
+
+  case class OauthConfig(githubOauth: GithubOauthConfig)
+
+  case class GithubOauthConfig(clientId: String, clientSecret: String)
 
   def loadConfig: IO[ConfigReaderFailures, Config] =
     ZIO.fromEither(ConfigSource.default.load[Config])

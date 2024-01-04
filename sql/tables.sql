@@ -144,7 +144,7 @@ CREATE TABLE IF NOT EXISTS gift_drop_table (
 CREATE TABLE IF NOT EXISTS "user" (
     id SERIAL PRIMARY KEY,
     username VARCHAR UNIQUE NOT NULL,
-    password VARCHAR NOT NULL
+    avatar_url VARCHAR NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS user_recipe_like (

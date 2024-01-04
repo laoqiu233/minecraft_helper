@@ -19,6 +19,10 @@ object ApiError {
       extends ApiError("internal", cause.toString)
   final case class NotFoundError(cause: String)
       extends ApiError("not_found", cause)
+  final case class AuthError(cause: String)
+      extends ApiError("unauthorized", cause)
+  final case class OauthError(cause: String)
+      extends ApiError("oauth_failed", cause)
 
   def encodeErrorResponse(error: ApiError): Response =
     Response
@@ -27,5 +31,8 @@ object ApiError {
         case _: InternalError       => Status.InternalServerError
         case _: NotFoundError       => Status.NotFound
         case _: InvalidRequestError => Status.BadRequest
+        case _: AuthError           => Status.Unauthorized
+        case _: OauthError          => Status.Unauthorized
+        case _                      => Status.BadRequest
       })
 }

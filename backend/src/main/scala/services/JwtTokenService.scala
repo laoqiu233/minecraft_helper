@@ -4,7 +4,7 @@ package services
 import config.Config.JwtConfig
 import config.Config
 
-import zio.{Task, ZIO, ZLayer}
+import zio.{Task, URLayer, ZIO, ZLayer}
 import pdi.jwt.{JwtAlgorithm, JwtCirce, JwtClaim}
 
 import java.time.Instant
@@ -34,7 +34,7 @@ case class JwtTokenService(config: JwtConfig) extends TokenService {
 object JwtTokenService {
   private val algorithm = JwtAlgorithm.HS512
 
-  val live = ZLayer.fromZIO(for {
+  val live: URLayer[Config, JwtTokenService] = ZLayer.fromZIO(for {
     config <- ZIO.service[Config]
   } yield JwtTokenService(config.jwt))
 }

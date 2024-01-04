@@ -1,10 +1,11 @@
 package io.dmtri.minecraft
 package storage.jdbc
 
-import io.dmtri.minecraft.models.{Item, Recipe}
+import io.dmtri.minecraft.models.{LikeStatus, Recipe}
 import io.dmtri.minecraft.storage.{ItemsStorage, RecipeStorage}
+import shapeless.syntax.std.tuple.productTupleOps
 import zio.{Task, URLayer, ZIO, ZLayer}
-import zio.jdbc.{ZConnectionPool, sqlInterpolator, transaction}
+import zio.jdbc.{ZConnection, ZConnectionPool, sqlInterpolator, transaction}
 
 case class JdbcRecipeStorage(pool: ZConnectionPool, itemsStorage: ItemsStorage)
     extends RecipeStorage
@@ -49,7 +50,8 @@ case class JdbcRecipeStorage(pool: ZConnectionPool, itemsStorage: ItemsStorage)
       resultAmount: Int,
       craftType: String,
       category: Option[String],
-      group: Option[String]
+      group: Option[String],
+      likeStatus: LikeStatus
   ) =
     for {
       resultItem <- itemsStorage
@@ -69,7 +71,8 @@ case class JdbcRecipeStorage(pool: ZConnectionPool, itemsStorage: ItemsStorage)
           ingredients,
           resultItem,
           resultAmount,
-          pattern.getOrElse("")
+          pattern.getOrElse(""),
+          likeStatus
         )
       case "minecraft:crafting_shapeless" =>
         Recipe.CraftingShapeless(
@@ -78,7 +81,8 @@ case class JdbcRecipeStorage(pool: ZConnectionPool, itemsStorage: ItemsStorage)
           group,
           ingredients.values.toSeq,
           resultItem,
-          resultAmount
+          resultAmount,
+          likeStatus
         )
       case "minecraft:smelting" | "minecraft:blasting" =>
         Recipe.Smelting(
@@ -89,7 +93,8 @@ case class JdbcRecipeStorage(pool: ZConnectionPool, itemsStorage: ItemsStorage)
           resultItem,
           resultAmount,
           smeltTime.getOrElse(0),
-          craftType.slice(10, craftType.length)
+          craftType.slice(10, craftType.length),
+          likeStatus
         )
       case _ =>
         Recipe.Other(
@@ -98,38 +103,82 @@ case class JdbcRecipeStorage(pool: ZConnectionPool, itemsStorage: ItemsStorage)
           group,
           resultItem,
           resultAmount,
-          ingredients
+          ingredients,
+          likeStatus
         )
     }
 
-  private def getRecipe(recipeId: Int) = {
-    val recipeQuery =
+  private def getLikeQuery(recipeId: Int, userId: Int) = {
+    val likeQuery =
       sql"""
-         SELECT result_item, result_amount, craft_type, craft_category, craft_group
-         FROM recipe
-         WHERE id = $recipeId
-         """.query[(Int, Int, String, Option[String], Option[String])].selectOne
+        SELECT is_like
+        FROM user_recipe_like
+        WHERE user_id = $userId AND recipe_id = $recipeId
+         """.query[Boolean].selectOne
 
-    recipeQuery.flatMap {
-      case Some((resultItem, resultAmount, craftType, category, group)) =>
-        makeRecipe(recipeId, resultItem, resultAmount, craftType, category, group).map(Some(_))
-      case None => ZIO.succeed(None)
+    for {
+      isLike <- likeQuery
+    } yield isLike match {
+      case Some(value) =>
+        if (value) LikeStatus.Like
+        else LikeStatus.Dislike
+      case None => LikeStatus.NoStatus
     }
   }
 
-  override def getRecipeById(recipeId: Int): Task[Option[Recipe]] =
+  private def getRecipe(recipeId: Int, userId: Option[Int])  = {
+    val recipeQuery =
+      sql"""
+         SELECT id, result_item, result_amount, craft_type, craft_category, craft_group
+         FROM recipe
+         WHERE id = $recipeId
+         """.query[(Int, Int, Int, String, Option[String], Option[String])].selectOne
+
+    val likeStatusZio = userId match {
+      case Some(value) => getLikeQuery(recipeId, value)
+      case None => ZIO.succeed(LikeStatus.NoStatus)
+    }
+
+    for {
+      recipeDataOpt <- recipeQuery
+      likeStatus <- likeStatusZio
+      recipe <- recipeDataOpt.map(data => (makeRecipe _).tupled(data :+ likeStatus).map(Some(_))).getOrElse(ZIO.none)
+    } yield recipe
+  }
+
+  override def getRecipeById(recipeId: Int, userId: Option[Int]): Task[Option[Recipe]] =
     transaction {
-      getRecipe(recipeId)
+      getRecipe(recipeId, userId)
     }.provideLayer(poolLayer)
 
-  override def getRecipesForItem(itemId: Int): Task[Seq[Recipe]] = transaction {
+  override def getRecipesForItem(itemId: Int, userId: Option[Int]): Task[Seq[Recipe]] = transaction {
     val recipesQuery =
       sql"""
          SELECT id
          FROM recipe
          WHERE result_item = $itemId
          """.query[Int].selectAll
-    recipesQuery.flatMap(_.mapZIO(getRecipe).map(_.flatten))
+    recipesQuery.flatMap(_.mapZIO(getRecipe(_, userId)).map(_.flatten))
+  }.provideLayer(poolLayer)
+
+  override def changeRecipeLikeStatus(recipeId: Int, userId: Int, status: LikeStatus): Task[Unit] = transaction {
+    val deletePreviousLikeQuery =
+      sql"""
+         DELETE FROM user_recipe_like
+         WHERE user_id = $userId AND recipe_id = $recipeId
+       """.delete
+
+    val insertLikeQuery =
+      sql"""
+           INSERT INTO user_recipe_like (user_id, recipe_id, is_like, ts)
+           VALUES ($userId, $recipeId, ${status == LikeStatus.Like}, now())
+         """.insert
+
+    for {
+      _ <- deletePreviousLikeQuery
+      _ <- if (status != LikeStatus.NoStatus) insertLikeQuery
+        else ZIO.unit
+    } yield ()
   }.provideLayer(poolLayer)
 }
 

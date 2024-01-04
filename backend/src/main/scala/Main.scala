@@ -1,27 +1,17 @@
 package io.dmtri.minecraft
 
 import io.dmtri.minecraft.config.Config
-import io.dmtri.minecraft.handlers.{ItemsHandler, RecipeHandler}
+import io.dmtri.minecraft.handlers.{AuthHandler, AuthService, ItemsHandler, RecipeHandler}
 import io.dmtri.minecraft.postgres.PostgresConnectionPool
-import io.dmtri.minecraft.storage.{ItemDropStorage, ItemsStorage, RecipeStorage}
-import io.dmtri.minecraft.storage.jdbc.{
-  JdbcItemDropStorage,
-  JdbcItemsStorage,
-  JdbcRecipeStorage
-}
+import io.dmtri.minecraft.storage.{ItemDropStorage, ItemsStorage, RecipeStorage, UserStorage}
+import io.dmtri.minecraft.storage.jdbc.{JdbcItemDropStorage, JdbcItemsStorage, JdbcRecipeStorage, JdbcUserStorage}
 import zio.http._
 import zio.{Scope, ULayer, URLayer, ZIO, ZIOAppArgs, ZIOAppDefault, ZLayer}
 import zio.Console._
 import zio.jdbc.ZConnectionPool
 import io.dmtri.minecraft.models.ApiError._
-import io.dmtri.minecraft.models.{
-  BiomeItemDrop,
-  ChestItemDrop,
-  FishingItemDrop,
-  GiftItemDrop,
-  MobItemDrop
-}
-import io.dmtri.minecraft.services.{ItemDropService, JwtTokenService}
+import io.dmtri.minecraft.models.{BiomeItemDrop, ChestItemDrop, FishingItemDrop, GiftItemDrop, MobItemDrop}
+import io.dmtri.minecraft.services.{GithubOauthService, ItemDropService, JwtTokenService}
 
 object Main extends ZIOAppDefault {
   private type Env = HttpApp[Any] with Config
@@ -37,11 +27,7 @@ object Main extends ZIOAppDefault {
       JdbcItemsStorage.live
     )
 
-    val itemDropStorages = ZLayer.make[ItemDropStorage[
-      BiomeItemDrop
-    ] with ItemDropStorage[GiftItemDrop] with ItemDropStorage[
-      FishingItemDrop
-    ] with ItemDropStorage[MobItemDrop] with ItemDropStorage[ChestItemDrop]](
+    val itemDropStorages = ZLayer.make[ItemDropStorage.AllDropStorages](
       pool,
       JdbcItemDropStorage.biomeItemDropLive,
       JdbcItemDropStorage.giftItemDropLive,
@@ -56,24 +42,34 @@ object Main extends ZIOAppDefault {
       JdbcRecipeStorage.live
     )
 
+    val userStorage = ZLayer.make[UserStorage](
+      pool,
+      JdbcUserStorage.live
+    )
+
     val app = ZLayer.fromZIO(
       for {
         itemsHandler <- ZIO.service[ItemsHandler]
         recipeHandler <- ZIO.service[RecipeHandler]
+        authHandler <- ZIO.service[AuthHandler]
       } yield {
-        itemsHandler.routes ++ recipeHandler.routes
+        itemsHandler.routes ++ recipeHandler.routes ++ authHandler.routes
       }.handleError(encodeErrorResponse).toHttpApp @@ Middleware.cors
     )
 
     ZLayer.make[Env](
+      userStorage,
       recipeStorage,
       itemStorage,
       itemDropStorages,
+      GithubOauthService.live,
       JwtTokenService.live,
+      AuthService.live,
       ItemDropService.live,
       Config.configLive,
       ItemsHandler.live,
       RecipeHandler.live,
+      AuthHandler.live,
       app
     )
   }

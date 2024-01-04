@@ -25,6 +25,6 @@
 \i /sql/functions.sql
 \i /sql/index.sql
 
-INSERT INTO "user" (username, password) VALUES
-('dmitrik', '123456'),
-('rodionik', 'big_bebra');
+INSERT INTO "user" (username, avatar_url) VALUES
+('dmitrik', 'https://avatars.githubusercontent.com/u/25715854?v=4'),
+('rodionik', 'https://avatars.githubusercontent.com/u/25715854?v=4');
