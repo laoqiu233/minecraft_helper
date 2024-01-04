@@ -1,48 +1,48 @@
-interface IngredientsMap{
-    [key: string]: Array<Item>
+interface IngredientsMap {
+  [key: string]: Array<Item>
 }
 
 type Recipe = {
-    CraftingShaped?: CraftingShaped,
-    CraftingShapeless?: CraftingShapeless,
-    Smelting?: Smelting,
-    Other?: Other
+  CraftingShaped?: CraftingShaped
+  CraftingShapeless?: CraftingShapeless
+  Smelting?: Smelting
+  Other?: Other
 }
 
 type CraftingShaped = {
-    id: number,
-    recipeCategory: string,
-    recipeGroup: string,
-    ingredients: IngredientsMap,
-    resultItem: Item,
-    resultItemAmount: number,
-    craftPattern: string
+  id: number
+  recipeCategory: string
+  recipeGroup: string
+  ingredients: IngredientsMap
+  resultItem: Item
+  resultItemAmount: number
+  craftPattern: string
 }
 
 type CraftingShapeless = {
-    id: number,
-    recipeCategory: string,
-    recipeGroup: string,
-    shapelessIngredients: Item[][],
-    resultItem: Item,
-    resultItemAmount: number
+  id: number
+  recipeCategory: string
+  recipeGroup: string
+  shapelessIngredients: Item[][]
+  resultItem: Item
+  resultItemAmount: number
 }
 
 type Smelting = {
-    id: number,
-    recipeCategory: string,
-    recipeGroup: string,
-    sourceItem: Item,
-    resultItem: Item,
-    resultItemAmount: number
-    smeltTime: number,
-    smeltType: number,
+  id: number
+  recipeCategory: string
+  recipeGroup: string
+  sourceItem: Item
+  resultItem: Item
+  resultItemAmount: number
+  smeltTime: number
+  smeltType: number
 }
 
 type Other = {
-    id: number,
-    resultItem: Item,
-    ingredients: IngredientsMap,
-    craftPatten: string,
-    resultItemAmount: number
+  id: number
+  resultItem: Item
+  ingredients: IngredientsMap
+  craftPatten: string
+  resultItemAmount: number
 }

@@ -1,41 +1,42 @@
 .invslot {
-    position: relative;
-    display: inline-block;
-    background: #8B8B8B no-repeat center center / 32px 32px;
-    border: 2px solid;
-    border-color: #373737 #FFF #FFF #373737;
-    width: 32px;
-    height: 32px;
-    font-size: 16px;
-    line-height: 1;
-    text-align: left;
-    vertical-align: bottom;
+  position: relative;
+  display: inline-block;
+  background: #8b8b8b no-repeat center center / 32px 32px;
+  border: 2px solid;
+  border-color: #373737 #fff #fff #373737;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  line-height: 1;
+  text-align: left;
+  vertical-align: bottom;
 }
 .invslot-item {
-    position: relative;
-    display: block;
-    margin: -2px;
-    padding: 2px;
-    width: 32px;
-    height: 32px;
+  position: relative;
+  display: block;
+  margin: -2px;
+  padding: 2px;
+  width: 32px;
+  height: 32px;
 }
-.invslot::before, .invslot::after {
-    content: "";
-    position: absolute;
-    background-color: #8B8B8B;
-    height: 2px;
-    width: 2px;
-    pointer-events: none;
+.invslot::before,
+.invslot::after {
+  content: "";
+  position: absolute;
+  background-color: #8b8b8b;
+  height: 2px;
+  width: 2px;
+  pointer-events: none;
 }
 .invslot::after {
-    top: -2px;
-    right: -2px;
+  top: -2px;
+  right: -2px;
 }
 .invslot::before {
-    bottom: -2px;
-    left: -2px;
+  bottom: -2px;
+  left: -2px;
 }
 .invslot-item-image {
-    image-rendering: crisp-edges;
-    image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
 }

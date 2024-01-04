@@ -1,6 +1,6 @@
 type RecipeUI = {
-    recipeType: string,
-    ingridients: Item[][],
-    resultItem: Item,
-    resultAmount: number
+  recipeType: string
+  ingridients: Item[][]
+  resultItem: Item
+  resultAmount: number
 }

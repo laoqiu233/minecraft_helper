@@ -6,7 +6,6 @@ import { fetchRecipe } from "./util/RecipeApi"
 import { useEffect, useState } from "react"
 
 function App() {
-
   const [recipe, setRecipe] = useState<RecipeUI | undefined>(undefined)
 
   useEffect(() => {
@@ -17,13 +16,10 @@ function App() {
 
   return (
     <div className="app">
-        <div className="app-sidebar">
-          <AllItems/>
-        </div>
-        <div className="app-main">
-          {recipe && <RecipeCard recipe={recipe}/>}
-        </div>
-        
+      <div className="app-sidebar">
+        <AllItems />
+      </div>
+      <div className="app-main">{recipe && <RecipeCard recipe={recipe} />}</div>
     </div>
   )
 }

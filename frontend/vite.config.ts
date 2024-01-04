@@ -13,8 +13,8 @@ export default defineConfig({
   },
   css: {
     modules: {
-      localsConvention: "camelCaseOnly"
-    }
+      localsConvention: "camelCaseOnly",
+    },
   },
   test: {
     globals: true,
