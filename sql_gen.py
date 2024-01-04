@@ -506,7 +506,7 @@ with open("sql/dimensions_data.sql", "w") as file:
         dimension_id = dimensions[dimension]
         dimension_name = " ".join([part.capitalize() for part in dimension.split("_")])
         dimension_description = f"{dimension_name} dimension"
-        dimension_image = f"/dimensions/{dimension}.png"
+        dimension_image = f"/dimensions/{dimension}.png".replace(":", "_")
 
         file.write(f"({dimension_id}, '{dimension_name}', '{dimension_image}', '{dimension_description}')")
 
@@ -522,7 +522,7 @@ with open("sql/biomes_data.sql", "w") as file:
         biome_id = biomes[biome]
         biome_name = " ".join([part.capitalize() for part in biome[10:].split("_")])
         biome_description = f"The {biome_name} biome"
-        biome_image = f"/biomes/{biome}.png"
+        biome_image = f"/biomes/{biome}.png".replace(":", "_")
         biome_dimension = biomes_to_dimension[biome_id]
 
         file.write(f"({biome_id}, '{biome_name}', '{biome_image}', '{biome_description}', {biome_dimension})")
@@ -538,7 +538,7 @@ with open("sql/structures_data.sql", "w") as file:
     for index, structure in enumerate(structures):
         structure_id = structures[structure]
         structure_name = " ".join([part.capitalize() for part in structure.split("_")])
-        structure_image = f"/structures/{structure}.png"
+        structure_image = f"/structures/{structure}.png".replace(":", "_")
         structure_description = f"The {structure_name} structure"
 
         file.write(f"({structure_id}, '{structure_name}', '{structure_image}', '{structure_description}')")
@@ -570,7 +570,7 @@ with open("sql/mobs_data.sql", "w") as file:
     for index, mob in enumerate(mobs):
         mob_id = mobs[mob]
         mob_name = " ".join([part.capitalize() for part in mob[10:].split("_")])
-        mob_image = f"/mobs/{mob}.png"
+        mob_image = f"/mobs/{mob}.png".replace(":", "_")
         mob_hp, player_realtion = mobs_info[mob_id]
 
         file.write(f"({mob_id}, '{mob_name}', '{mob_image}', {mob_hp}, {player_realtion})")
@@ -624,8 +624,9 @@ with open("sql/items_data.sql", "w") as file:
 
     for index, item in enumerate(items):
         item_name = " ".join([part.capitalize() for part in item[10:].split("_")])
+        image_name = f"/items/{item}.png".replace(":", "_")
 
-        file.write(f"({items[item]}, '{item_name}', '/items/{item}.png')")
+        file.write(f"({items[item]}, '{item_name}', '{image_name}')")
         
         if index == len(items) - 1:
             file.write(";\n")

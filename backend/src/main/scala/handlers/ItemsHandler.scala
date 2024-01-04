@@ -1,14 +1,15 @@
 package io.dmtri.minecraft
+package handlers
 
-import storage.{ItemDropStorage, ItemsStorage, RecipeStorage}
+import models.ApiError
+import models.Item._
+import services.ItemDropService
+import storage.{ItemsStorage, RecipeStorage}
 
-import io.dmtri.minecraft.models.ApiError
-import zio.http.{Method, Request, Response, Route, Routes, handler, int}
-import io.dmtri.minecraft.models.Item._
-import zio.{URLayer, ZIO, ZLayer}
-import io.circe.syntax._
 import io.circe.generic.auto._
-import io.dmtri.minecraft.services.ItemDropService
+import io.circe.syntax._
+import zio.http.{Method, Request, Response, Route, Routes, handler, int}
+import zio.{URLayer, ZIO, ZLayer}
 
 import scala.util.Try
 
