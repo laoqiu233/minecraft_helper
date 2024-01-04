@@ -76,7 +76,7 @@ case class JdbcRecipeStorage(pool: ZConnectionPool, itemsStorage: ItemsStorage)
           recipeId,
           category,
           group,
-          ingredients.values.flatten.toSeq,
+          ingredients.values.toSeq,
           resultItem,
           resultAmount
         )
