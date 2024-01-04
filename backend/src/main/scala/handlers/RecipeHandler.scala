@@ -11,7 +11,7 @@ import io.circe.syntax._
 
 case class RecipeHandler (recipeStorage: RecipeStorage) {
   private val getRecipeByIdRoute: Route[Any, ApiError] =
-    Method.GET / "recipes" / int("recipeId") -> handler { (recipeId: Int, req: Request) =>
+    Method.GET / "api" / "recipes" / int("recipeId") -> handler { (recipeId: Int, req: Request) =>
       val recipeQuery = recipeStorage.getRecipeById(recipeId).mapError(ApiError.InternalError)
 
       for {

@@ -19,7 +19,7 @@ case class ItemsHandler(
     dropService: ItemDropService
 ) {
   private val findByItemIdRoute: Route[Any, ApiError] =
-    Method.GET / "items" / int("itemId") -> handler {
+    Method.GET / "api" / "items" / int("itemId") -> handler {
       (itemId: Int, req: Request) =>
         for {
           itemOpt <- itemsStorage
@@ -32,7 +32,7 @@ case class ItemsHandler(
     }
 
   private val findDropsByItemIdRoute: Route[Any, ApiError] =
-    Method.GET / "items" / int("itemId") / "drops" -> handler {
+    Method.GET / "api" / "items" / int("itemId") / "drops" -> handler {
       (itemId: Int, req: Request) =>
         for {
           drops <- dropService.getAllDropsForItem(itemId)
@@ -41,7 +41,7 @@ case class ItemsHandler(
     }
 
   private val findRecipesByItemIdRoute: Route[Any, ApiError] =
-    Method.GET / "items" / int("itemId") / "recipes" -> handler {
+    Method.GET / "api" / "items" / int("itemId") / "recipes" -> handler {
       (itemId: Int, req: Request) =>
         for {
           recipes <- recipeStorage.getRecipesForItem(itemId).mapError(ApiError.InternalError)
@@ -50,7 +50,7 @@ case class ItemsHandler(
     }
 
   private val listItemsRoute: Route[Any, ApiError] =
-    Method.GET / "items" -> handler { (req: Request) =>
+    Method.GET / "api" / "items" -> handler { (req: Request) =>
       req.url.queryParams.get("tag") match {
         case None =>
           for {

@@ -21,3 +21,4 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-generic",
   "io.circe" %% "circe-parser"
 ).map(_ % circeVersion)
+libraryDependencies += "com.github.jwt-scala" %% "jwt-circe" % "9.4.5"

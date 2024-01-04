@@ -8,7 +8,7 @@ import pureconfig.error.ConfigReaderFailures
 import zio.{IO, ZIO, ZLayer}
 import pureconfig.generic.auto._
 
-case class Config(api: ApiConfig, postgres: PostgresConfig)
+case class Config(api: ApiConfig, postgres: PostgresConfig, jwt: JwtConfig)
 
 object Config {
   case class ApiConfig(port: Int)
@@ -19,6 +19,7 @@ object Config {
         "password" -> password
       )
   }
+  case class JwtConfig(secret: String, expirationSeconds: Int, issuer: String)
 
   def loadConfig: IO[ConfigReaderFailures, Config] =
     ZIO.fromEither(ConfigSource.default.load[Config])

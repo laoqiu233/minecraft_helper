@@ -64,9 +64,9 @@ object Main extends ZIOAppDefault {
       for {
         itemsHandler <- ZIO.service[ItemsHandler]
         recipeHandler <- ZIO.service[RecipeHandler]
-      } yield (
+      } yield {
         itemsHandler.routes ++ recipeHandler.routes
-      ).handleError(encodeErrorResponse).toHttpApp
+      }.handleError(encodeErrorResponse).toHttpApp
     )
 
     ZLayer.make[Env](
