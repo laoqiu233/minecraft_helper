@@ -1,8 +1,6 @@
 package io.dmtri.minecraft
 
-import io.dmtri.minecraft
 import io.dmtri.minecraft.config.Config
-import io.dmtri.minecraft.config.Config.PostgresConfig
 import io.dmtri.minecraft.handlers.{ItemsHandler, RecipeHandler}
 import io.dmtri.minecraft.postgres.PostgresConnectionPool
 import io.dmtri.minecraft.storage.{ItemDropStorage, ItemsStorage, RecipeStorage}
@@ -15,7 +13,6 @@ import zio.http._
 import zio.{Scope, ULayer, URLayer, ZIO, ZIOAppArgs, ZIOAppDefault, ZLayer}
 import zio.Console._
 import zio.jdbc.ZConnectionPool
-import io.dmtri.minecraft.models.Item._
 import io.dmtri.minecraft.models.ApiError._
 import io.dmtri.minecraft.models.{
   BiomeItemDrop,
@@ -24,8 +21,7 @@ import io.dmtri.minecraft.models.{
   GiftItemDrop,
   MobItemDrop
 }
-import io.dmtri.minecraft.services.ItemDropService
-import zio.json._
+import io.dmtri.minecraft.services.{ItemDropService, JwtTokenService}
 
 object Main extends ZIOAppDefault {
   private type Env = HttpApp[Any] with Config
@@ -66,13 +62,14 @@ object Main extends ZIOAppDefault {
         recipeHandler <- ZIO.service[RecipeHandler]
       } yield {
         itemsHandler.routes ++ recipeHandler.routes
-      }.handleError(encodeErrorResponse).toHttpApp
+      }.handleError(encodeErrorResponse).toHttpApp @@ Middleware.cors
     )
 
     ZLayer.make[Env](
       recipeStorage,
       itemStorage,
       itemDropStorages,
+      JwtTokenService.live,
       ItemDropService.live,
       Config.configLive,
       ItemsHandler.live,
