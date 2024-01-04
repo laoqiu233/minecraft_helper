@@ -10,7 +10,6 @@ import zio.{Scope, ULayer, URLayer, ZIO, ZIOAppArgs, ZIOAppDefault, ZLayer}
 import zio.Console._
 import zio.jdbc.ZConnectionPool
 import io.dmtri.minecraft.models.ApiError._
-import io.dmtri.minecraft.models.{BiomeItemDrop, ChestItemDrop, FishingItemDrop, GiftItemDrop, MobItemDrop}
 import io.dmtri.minecraft.services.{GithubOauthService, ItemDropService, JwtTokenService}
 
 object Main extends ZIOAppDefault {
@@ -58,15 +57,15 @@ object Main extends ZIOAppDefault {
     )
 
     ZLayer.make[Env](
+      Config.configLive,
       userStorage,
       recipeStorage,
       itemStorage,
       itemDropStorages,
       GithubOauthService.live,
       JwtTokenService.live,
-      AuthService.live,
       ItemDropService.live,
-      Config.configLive,
+      AuthService.live,
       ItemsHandler.live,
       RecipeHandler.live,
       AuthHandler.live,

@@ -16,7 +16,8 @@ import scala.util.Try
 case class ItemsHandler(
     itemsStorage: ItemsStorage,
     recipeStorage: RecipeStorage,
-    dropService: ItemDropService
+    dropService: ItemDropService,
+    authService: AuthService
 ) {
   private val findByItemIdRoute: Route[Any, ApiError] =
     Method.GET / "api" / "items" / int("itemId") -> handler {
@@ -41,10 +42,15 @@ case class ItemsHandler(
     }
 
   private val findRecipesByItemIdRoute: Route[Any, ApiError] =
-    Method.GET / "api" / "items" / int("itemId") / "recipes" -> handler {
-      (itemId: Int, req: Request) =>
+    Method.GET / "api" / "items" / int("itemId") / "recipes" ->
+      authService.optionalAuthAspect ->
+      handler {
+      (params: (Int, Option[Int]), req: Request) =>
+        val itemId = params._1
+        val userId = params._2
+
         for {
-          recipes <- recipeStorage.getRecipesForItem(itemId, None).mapError(ApiError.InternalError)
+          recipes <- recipeStorage.getRecipesForItem(itemId, userId).mapError(ApiError.InternalError)
           res <- ZIO.attempt(recipes.asJson.toString()).mapError(ApiError.InternalError)
         } yield Response.json(res)
     }
@@ -77,6 +83,6 @@ case class ItemsHandler(
 }
 
 object ItemsHandler {
-  private type Env = ItemsStorage with ItemDropService with RecipeStorage
+  private type Env = ItemsStorage with ItemDropService with RecipeStorage with AuthService
   val live: URLayer[Env, ItemsHandler] = ZLayer.fromFunction(ItemsHandler.apply _)
 }
