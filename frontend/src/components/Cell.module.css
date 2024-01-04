@@ -35,7 +35,7 @@
     bottom: -2px;
     left: -2px;
 }
-.invslot_item_image {
+.invslot-item-image {
     image-rendering: crisp-edges;
     image-rendering: pixelated;
 }

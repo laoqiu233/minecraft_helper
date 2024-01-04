@@ -1,4 +1,4 @@
-.mcui_recipe_card {
+.mcui-recipe-card {
     display: flex;
     align-items: center;
     background-color: #C6C6C6;
@@ -9,11 +9,11 @@
         
 }
 
-.mcui_recipe_board {
+.mcui-recipe-board {
     max-width: 108px;
 }
 
-.mcui_arrow {
+.mcui-arrow {
     background: url(/images/Grid_layout_Arrow.png) no-repeat;
     width: 32px;
     height: 26px;

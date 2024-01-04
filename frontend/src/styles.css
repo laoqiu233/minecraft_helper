@@ -1,9 +1,9 @@
-.App {
+.app {
   text-align: center;
   display: flex;
 }
 
-.App_sidebar {
+.app-sidebar {
   display: block;
   margin-left: 0;
   max-height: 100vh;
@@ -11,7 +11,7 @@
   overflow-y: scroll;
 }
 
-.App_main {
+.app-main {
   display: flex;
   align-items: center;
   justify-content: center;

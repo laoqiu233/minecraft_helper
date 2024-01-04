@@ -11,6 +11,11 @@ export default defineConfig({
     outDir: "build",
     sourcemap: true,
   },
+  css: {
+    modules: {
+      localsConvention: "camelCaseOnly"
+    }
+  },
   test: {
     globals: true,
     environment: "jsdom",

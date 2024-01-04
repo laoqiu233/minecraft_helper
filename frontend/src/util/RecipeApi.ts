@@ -1,6 +1,5 @@
 import API from "../API";
 
-
 function parseRecipeType(recipe: Recipe): string {
     if (recipe.CraftingShaped) {
         return "shaped"

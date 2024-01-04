@@ -12,7 +12,6 @@ export function AllItems() {
     const tableWidth = 5;
     const [items, setItems] = useState<Item[]>([])
 
-
     useEffect(() => {
         fetchAllItems().then((items) => setItems(items))
     }, [])

@@ -1,5 +1,5 @@
 import logo from "./logo.svg"
-import "./App.css"
+import "./styles.css"
 import { RecipeCard } from "./components/RecipeCard"
 import { AllItems } from "./components/AllItems"
 import { fetchRecipe } from "./util/RecipeApi"
@@ -16,11 +16,11 @@ function App() {
   })
 
   return (
-    <div className="App">
-        <div className="App_sidebar">
+    <div className="app">
+        <div className="app-sidebar">
           <AllItems/>
         </div>
-        <div className="App_main">
+        <div className="app-main">
           {recipe && <RecipeCard recipe={recipe}/>}
         </div>
         
