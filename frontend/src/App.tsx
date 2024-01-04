@@ -1,55 +1,29 @@
 import logo from "./logo.svg"
-import { Counter } from "./features/counter/Counter"
 import "./App.css"
+import { RecipeCard } from "./components/RecipeCard"
+import { AllItems } from "./components/AllItems"
+import { fetchRecipe } from "./util/RecipeApi"
+import { useEffect, useState } from "react"
 
 function App() {
+
+  const [recipe, setRecipe] = useState<RecipeUI | undefined>(undefined)
+
+  useEffect(() => {
+    fetchRecipe(6).then((recipe) => {
+      recipe && setRecipe(recipe)
+    })
+  })
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
+        <div className="App_sidebar">
+          <AllItems/>
+        </div>
+        <div className="App_main">
+          {recipe && <RecipeCard recipe={recipe}/>}
+        </div>
+        
     </div>
   )
 }
