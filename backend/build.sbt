@@ -22,3 +22,5 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-parser"
 ).map(_ % circeVersion)
 libraryDependencies += "com.github.jwt-scala" %% "jwt-circe" % "9.4.5"
+libraryDependencies += "com.softwaremill.sttp.client3" %% "core" % "3.9.1"
+libraryDependencies += "com.softwaremill.sttp.client3" %% "zio" % "3.9.1"

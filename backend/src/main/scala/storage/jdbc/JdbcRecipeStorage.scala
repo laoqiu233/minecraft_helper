@@ -1,7 +1,7 @@
 package io.dmtri.minecraft
 package storage.jdbc
 
-import io.dmtri.minecraft.models.{Item, Recipe}
+import io.dmtri.minecraft.models.{Recipe, LikeStatus}
 import io.dmtri.minecraft.storage.{ItemsStorage, RecipeStorage}
 import zio.{Task, URLayer, ZIO, ZLayer}
 import zio.jdbc.{ZConnectionPool, sqlInterpolator, transaction}
@@ -131,6 +131,8 @@ case class JdbcRecipeStorage(pool: ZConnectionPool, itemsStorage: ItemsStorage)
          """.query[Int].selectAll
     recipesQuery.flatMap(_.mapZIO(getRecipe).map(_.flatten))
   }.provideLayer(poolLayer)
+
+  override def changeRecipeLikeStatus(recipeId: Int, userId: Int, status: LikeStatus): Task[Unit] = ???
 }
 
 object JdbcRecipeStorage {
