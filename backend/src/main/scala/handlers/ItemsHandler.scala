@@ -44,7 +44,7 @@ case class ItemsHandler(
     Method.GET / "api" / "items" / int("itemId") / "recipes" -> handler {
       (itemId: Int, req: Request) =>
         for {
-          recipes <- recipeStorage.getRecipesForItem(itemId).mapError(ApiError.InternalError)
+          recipes <- recipeStorage.getRecipesForItem(itemId, None).mapError(ApiError.InternalError)
           res <- ZIO.attempt(recipes.asJson.toString()).mapError(ApiError.InternalError)
         } yield Response.json(res)
     }
