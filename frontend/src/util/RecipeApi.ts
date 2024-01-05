@@ -80,18 +80,11 @@ function parseResultAmount(recipe: Recipe): number {
   throw new Error("Unknown recipe type")
 }
 
-export async function fetchRecipe(id: number): Promise<RecipeUI> {
+export async function fetchRecipe(id: number): Promise<Recipe> {
   let res = await API.get(`/recipes/${id}`)
   let recipe: Recipe = res.data
 
-  let recipeUI: RecipeUI = {
-    recipeType: parseRecipeType(recipe),
-    ingridients: parseIngridients(recipe),
-    resultItem: parseResultItem(recipe),
-    resultAmount: parseResultAmount(recipe),
-  }
-
-  return recipeUI
+  return recipe
 }
 
 export async function fetchAllItems(): Promise<Item[]> {

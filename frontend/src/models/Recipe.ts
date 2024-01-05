@@ -1,5 +1,5 @@
 interface IngredientsMap {
-  [key: string]: Array<Item>
+  [key: string]: Item[]
 }
 
 type Recipe = {

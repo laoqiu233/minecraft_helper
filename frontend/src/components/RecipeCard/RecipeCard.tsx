@@ -1,19 +1,15 @@
 import styles from "./RecipeCard.module.css"
 import { Cell } from "../Cell/Cell"
+import { CraftingShapedCard } from "./formats/CraftingShapedCard"
 
 interface RecipeTypeProps {
-  recipe: RecipeUI
+  recipe: Recipe
 }
 
 export function RecipeCard({ recipe }: RecipeTypeProps) {
-  let recipeBoard = recipe.ingridients.map((items, index) => {
-    return <Cell items={items} />
-  })
-  return (
-    <div className={styles.mcuiRecipeCard}>
-      <div className={styles.mcuiRecipeBoard}>{recipeBoard}</div>
-      <div className={styles.mcuiArrow}></div>
-      <Cell items={[recipe.resultItem]} />
-    </div>
-  )
+  if (recipe.CraftingShaped) {
+    return <CraftingShapedCard recipe={recipe.CraftingShaped}/>
+  } else {
+    return <div>fuck you</div>
+  }
 }

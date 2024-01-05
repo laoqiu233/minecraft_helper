@@ -4,7 +4,7 @@ import { RootState } from "../../app/store"
 import { fetchRecipe } from "../../util/RecipeApi"
 
 interface RecipeState {
-  recipe: RecipeUI | undefined
+  recipe?: Recipe
   loading: "idle" | "pending" | "succeeded" | "failed"
 }
 
@@ -17,14 +17,14 @@ export const recipeSlice = createSlice({
   name: "recipe",
   initialState,
   reducers: {
-    recipeSet: (state, action: PayloadAction<RecipeUI>) => {
+    recipeSet: (state, action: PayloadAction<Recipe>) => {
       state.recipe = action.payload
     },
   },
   extraReducers: (builder) => {
     builder.addCase(
       fetchRecipeByIdAction.fulfilled,
-      (state, action: PayloadAction<RecipeUI>) => {
+      (state, action: PayloadAction<Recipe>) => {
         state.recipe = action.payload
       },
     )

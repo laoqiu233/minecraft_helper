@@ -2,10 +2,11 @@ import { useEffect, useState } from "react"
 import styles from "./Cell.module.css"
 
 interface cellProps {
-  items: Item[]
+  items: Item[],
+  amount: number
 }
 
-export function Cell({ items }: cellProps) {
+export function Cell({ items, amount }: cellProps) {
   const [itemCounter, setItemCounter] = useState(0)
 
   useEffect(() => {
@@ -22,15 +23,16 @@ export function Cell({ items }: cellProps) {
     <div className={styles.invslot}>
       {items[itemCounter] ? (
         <img
-          className={styles.invslot_item_image}
+          className={styles.invslotItemImage}
           src={"images" + items[itemCounter].image}
           alt={items[itemCounter].name}
-          width="32"
-          height="32"
         />
       ) : (
         ""
       )}
+      {
+       amount > 0 && <span className={styles.invslotItemCount}>{amount}</span>
+      }
     </div>
   )
 }
