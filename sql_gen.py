@@ -63,7 +63,7 @@ def parse_ingredient(craft_id, ingredient, key = "null"):
         if tag == "": tag = input(f"Come up with tag for {ingredient}: ")
         
         # print(f"Generated tag {tag} for items: {ingredient}")
-        tag_id = parse_tag(tag)
+        tag_id = parse_tag('#' + tag)
 
         for i in ingredient:
             put_item_in_tag(parse_item(i["item"]), tag_id)
@@ -79,7 +79,7 @@ def parse_ingredient(craft_id, ingredient, key = "null"):
             (craft_id, key, True, item_id, "null")
         )
     else:
-        tag_id = parse_tag(ingredient["tag"])
+        tag_id = parse_tag('#' + ingredient["tag"])
 
         ingredients.append(
             (craft_id, key, False, "null", tag_id)
@@ -147,6 +147,7 @@ def find_item_tags(tag):
     return res
 
 for tag in item_tags:
+    item_tags[tag] = find_item_tags(tag)
     for item in item_tags[tag]:
         tag_id = parse_tag(tag)
         item_id = parse_item(item)
