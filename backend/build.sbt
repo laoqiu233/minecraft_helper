@@ -1,11 +1,38 @@
 ThisBuild / version := "0.1.0-SNAPSHOT"
-
+ThisBuild / organization := "io.dmtri"
 ThisBuild / scalaVersion := "2.13.12"
 
 lazy val root = (project in file("."))
   .settings(
     name := "backend",
-    idePackagePrefix := Some("io.dmtri.minecraft")
+    idePackagePrefix := Some("io.dmtri.minecraft"),
+    assembly / assemblyJarName := "mc_helper_backend.jar",
+    assembly / assemblyMergeStrategy := {
+      case x if Assembly.isConfigFile(x) =>
+        MergeStrategy.concat
+      case PathList(ps @ _*)
+          if Assembly.isReadme(ps.last) || Assembly.isLicenseFile(ps.last) =>
+        MergeStrategy.rename
+      case PathList("META-INF", xs @ _*) =>
+        (xs map {
+          _.toLowerCase
+        }) match {
+          case ("manifest.mf" :: Nil) | ("index.list" :: Nil) |
+              ("dependencies" :: Nil) =>
+            MergeStrategy.discard
+          case ps @ (x :: xs)
+              if ps.last.endsWith(".sf") || ps.last.endsWith(".dsa") =>
+            MergeStrategy.discard
+          case "plexus" :: xs =>
+            MergeStrategy.discard
+          case "services" :: xs =>
+            MergeStrategy.filterDistinctLines
+          case ("spring.schemas" :: Nil) | ("spring.handlers" :: Nil) =>
+            MergeStrategy.filterDistinctLines
+          case _ => MergeStrategy.first
+        }
+      case _ => MergeStrategy.first
+    }
   )
 
 val circeVersion = "0.14.1"
