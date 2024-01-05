@@ -1,4 +1,3 @@
-import logo from "./logo.svg"
 import "./styles.css"
 import { RecipeCard } from "./components/RecipeCard/RecipeCard"
 import { AllItems } from "./components/AllItems/AllItems"

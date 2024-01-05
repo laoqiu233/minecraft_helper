@@ -37,8 +37,6 @@
   left: -2px;
 }
 .invslot-item-image {
-  image-rendering: crisp-edges;
-  image-rendering: pixelated;
   width: 32px;
   height: 32px;
 }
@@ -47,5 +45,5 @@
   bottom: 0;
   right: 0;
   color: white;
-  text-shadow: 2px 2px 0 #3F3F3F;
+  text-shadow: 2px 2px 0 #3f3f3f;
 }

@@ -36,7 +36,7 @@ type Smelting = {
   resultItem: Item
   resultItemAmount: number
   smeltTime: number
-  smeltType: number
+  smeltType: "smelting" | "blasting"
 }
 
 type Other = {

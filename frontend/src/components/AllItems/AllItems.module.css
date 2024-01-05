@@ -1,8 +1,8 @@
 .item-btn {
-    padding: 0;
-    border: 0;
-    background: none;
+  padding: 0;
+  border: 0;
+  background: none;
 }
 .item-btn:hover {
-    cursor: pointer;
+  cursor: pointer;
 }

@@ -1,11 +1,28 @@
 .recipe-card {
-  display: flex;
-  align-items: center;
   background-color: #c6c6c6;
   border: 2px solid;
   border-color: #dbdbdb #5b5b5b #5b5b5b #dbdbdb;
   padding: 6px;
+  color: #3f3f3f;
+}
+
+.recipe-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.recipe-card-inner {
+  display: flex;
+  align-items: center;
   text-align: left;
+  width: fit-content;
+  margin: auto;
+}
+
+.recipe-card-footer {
+  margin-top: 15px;
 }
 
 .recipe-board {

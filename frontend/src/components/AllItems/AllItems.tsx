@@ -29,7 +29,10 @@ export function AllItems() {
       <div>
         {items.map((item) => {
           return (
-            <button className={styles.itemBtn} onClick={() => dispatch(fetchRecipeByIdAction(item.id))}>
+            <button
+              className={styles.itemBtn}
+              onClick={() => dispatch(fetchRecipeByIdAction(item.id))}
+            >
               <Cell items={[item]} />
             </button>
           )

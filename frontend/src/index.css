@@ -3,11 +3,17 @@
   src: url("fonts/MinecraftRegular-Bmg3.otf");
 }
 
+@font-face {
+  font-family: "Minecraft";
+  src: url("fonts/MinecraftBold-nMK1.otf");
+  font-weight: 700;
+}
+
 body {
   margin: 0;
-  font-family: "Minecraft", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  font-family: "Minecraft", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
