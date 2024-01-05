@@ -4,6 +4,7 @@ import { Cell } from "../Cell/Cell"
 import { useAppDispatch } from "../../app/hooks"
 import { fetchRecipeByIdAction } from "../../features/recipe/recipeSlice"
 import styles from "./AllItems.module.css"
+import { addEntityToBoardThunk, pasteNewRoot } from "../../features/craftsBoard/craftsBoardSlice"
 
 function createArrayOfArrays<T>(flatArray: T[], subarrayLength: number): T[][] {
   return Array.from(
@@ -29,10 +30,7 @@ export function AllItems() {
       <div>
         {items.map((item) => {
           return (
-            <button
-              className={styles.itemBtn}
-              onClick={() => dispatch(fetchRecipeByIdAction(item.id))}
-            >
+            <button className={styles.itemBtn} onClick={() => dispatch(addEntityToBoardThunk(item.id))}>
               <Cell items={[item]} />
             </button>
           )

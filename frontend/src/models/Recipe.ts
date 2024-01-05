@@ -3,6 +3,7 @@ interface IngredientsMap {
 }
 
 type Recipe = {
+  id: number,
   CraftingShaped?: CraftingShaped
   CraftingShapeless?: CraftingShapeless
   Smelting?: Smelting

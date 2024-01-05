@@ -67,7 +67,7 @@ function parseResultItem(recipe: Recipe): Item {
   throw new Error("Unknown recipe type")
 }
 
-function parseResultAmount(recipe: Recipe): number {
+function parseResultAmount(recipe: Recipe): number | undefined {
   if (recipe.CraftingShaped) {
     return recipe.CraftingShaped.resultItemAmount
   } else if (recipe.CraftingShapeless) {
@@ -80,7 +80,20 @@ function parseResultAmount(recipe: Recipe): number {
   throw new Error("Unknown recipe type")
 }
 
-export async function fetchRecipe(id: number): Promise<Recipe> {
+export function parseId(recipe: Recipe): number {
+  if (recipe.CraftingShaped) {
+    return recipe.CraftingShaped.id
+  } else if (recipe.CraftingShapeless) {
+    return recipe.CraftingShapeless.id
+  } else if (recipe.Other) {
+    return recipe.Other.id
+  } else if (recipe.Smelting) {
+    return recipe.Smelting.id
+  }
+  throw new Error("Unknown recipe type")
+}
+
+export async function fetchRecipes(id: number): Promise<Recipe> {
   let res = await API.get(`/recipes/${id}`)
   let recipe: Recipe = res.data
 

@@ -5,13 +5,19 @@ import {
   CraftingShapelessCard,
 } from "./formats/CraftingCard"
 import { SmeltingCard } from "./formats/SmeltingCard"
+import { useAppSelector } from "../../app/hooks"
 
 interface RecipeTypeProps {
-  recipe: Recipe
+  recipeId: number
 }
 
-export function RecipeCard({ recipe }: RecipeTypeProps) {
-  if (recipe.CraftingShaped) {
+export function RecipeCard({ recipeId }: RecipeTypeProps) {
+  const recipe: Recipe = useAppSelector((state) => {
+    return state.recipes.recipes[recipeId];
+  })
+  if (!recipe) {
+    return <p>fuck you</p>
+  } else if (recipe.CraftingShaped) {
     return <CraftingShapedCard recipe={recipe.CraftingShaped} />
   } else if (recipe.CraftingShapeless) {
     return <CraftingShapelessCard recipe={recipe.CraftingShapeless} />

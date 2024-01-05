@@ -1,19 +1,18 @@
+
 import "./styles.css"
-import { RecipeCard } from "./components/RecipeCard/RecipeCard"
 import { AllItems } from "./components/AllItems/AllItems"
-import { fetchRecipe } from "./util/RecipeApi"
-import { useEffect, useState } from "react"
-import { useAppSelector } from "./app/hooks"
+import { CraftBoard } from "./components/craftBoard/CraftBoard"
 
 function App() {
-  const { recipe } = useAppSelector((state) => state.recipe)
 
   return (
     <div className="app">
       <div className="app-sidebar">
         <AllItems />
       </div>
-      <div className="app-main">{recipe && <RecipeCard recipe={recipe} />}</div>
+      <div className="app-main">
+        <CraftBoard />
+      </div>
     </div>
   )
 }
