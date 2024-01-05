@@ -16,8 +16,10 @@ export function CraftingShapedCard({recipe}: CraftingShapedCardProps) {
 
     return (
         <div className={styles.recipeCard}>
-            <div className={styles.recipeBoard}>
-                {itemsGrid.flat().map((v, i) => <Cell items={v} amount={1} key={i}/>)}
+            <div>
+                {itemsGrid.map((row, i) => <div key={i}>
+                    {row.map((items, j) => <Cell items={items} amount={1} key={`${i}-${j}`}/>)}
+                </div>)}
             </div>
             <div className={styles.arrow}/>
             <Cell items={[recipe.resultItem]} amount={recipe.resultItemAmount}/>

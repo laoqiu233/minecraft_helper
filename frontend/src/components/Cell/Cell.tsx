@@ -31,7 +31,7 @@ export function Cell({ items, amount }: cellProps) {
         ""
       )}
       {
-       amount > 0 && <span className={styles.invslotItemCount}>{amount}</span>
+       amount > 1 && <span className={styles.invslotItemCount}>{amount}</span>
       }
     </div>
   )
