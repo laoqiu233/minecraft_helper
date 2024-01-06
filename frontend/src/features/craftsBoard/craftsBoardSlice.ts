@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
 import { AppDispatch, RootState } from "../../app/store"
 import { ThunkAction } from "redux-thunk"
-import { fetchRecipeByIdAction } from "../recipe/recipeSlice"
+import { fetchRecipesByItemIdAction } from "../recipe/recipeSlice"
 
 export interface CraftNodes {
   [key: number]: CraftNode
@@ -11,7 +11,7 @@ export interface CraftNodes {
 export interface CraftNode {
   targetItemId: number
   currentSlide: number
-  childens: number[]
+  children: number[]
 }
 
 interface CraftsBoardState {
@@ -32,7 +32,7 @@ export const addEntityToBoardThunk = createAsyncThunk<
     state: RootState
   }
 >("board/addEntity", async (itemId: number, thunkApi) => {
-  thunkApi.dispatch(fetchRecipeByIdAction(itemId))
+  thunkApi.dispatch(fetchRecipesByItemIdAction(itemId))
   thunkApi.dispatch(pasteNewRoot(itemId))
 })
 
@@ -46,7 +46,7 @@ export const addChildEntityToBoardThunk = createAsyncThunk<
 >("board/addEntity", async (payload, thunkApi) => {
   const state = thunkApi.getState()
   const nodeChildrens =
-    state.craftBoard.craftNodes[payload.parentNodeId].childens
+    state.craftBoard.craftNodes[payload.parentNodeId].children
   const isAlreadyChild = nodeChildrens
     .map((childNodeId) => {
       return state.craftBoard.craftNodes[childNodeId].targetItemId
@@ -55,7 +55,7 @@ export const addChildEntityToBoardThunk = createAsyncThunk<
       return targetChildItemId == payload.childTargetItemId
     })
   if (!isAlreadyChild) {
-    thunkApi.dispatch(fetchRecipeByIdAction(payload.childTargetItemId))
+    thunkApi.dispatch(fetchRecipesByItemIdAction(payload.childTargetItemId))
     thunkApi.dispatch(addChild(payload))
   }
 })
@@ -74,9 +74,9 @@ export const craftsBoardSlice = createSlice({
       state.craftNodes[state.currentNodeId] = {
         targetItemId: action.payload.childTargetItemId,
         currentSlide: 0,
-        childens: [],
+        children: [],
       }
-      state.craftNodes[action.payload.parentNodeId].childens.push(
+      state.craftNodes[action.payload.parentNodeId].children.push(
         state.currentNodeId,
       )
       state.currentNodeId += 1
@@ -86,7 +86,7 @@ export const craftsBoardSlice = createSlice({
         0: {
           targetItemId: action.payload,
           currentSlide: 0,
-          childens: [],
+          children: [],
         },
       }
       state.currentNodeId = 1
@@ -95,13 +95,13 @@ export const craftsBoardSlice = createSlice({
       const craftNodeId = action.payload
       state.craftNodes[craftNodeId].currentSlide += 1
 
-      state.craftNodes[craftNodeId].childens = []
+      state.craftNodes[craftNodeId].children = []
     },
     prevSlide: (state, action: PayloadAction<number>) => {
       const craftNodeId = action.payload
       state.craftNodes[craftNodeId].currentSlide -= 1
 
-      state.craftNodes[craftNodeId].childens = []
+      state.craftNodes[craftNodeId].children = []
     },
   },
 })

@@ -15,6 +15,7 @@ interface CraftCardTypeProps {
 }
 
 export function CraftCard({ craftNodeId }: CraftCardTypeProps) {
+  const childrenNodeIds = useAppSelector(state => state.craftBoard.craftNodes[craftNodeId].children)
   const dispatch = useAppDispatch()
 
   const craftNode: CraftNode = useAppSelector(
@@ -42,13 +43,18 @@ export function CraftCard({ craftNodeId }: CraftCardTypeProps) {
 
   return (
     <div className={styles.craftCard}>
-      {0 < craftNode.currentSlide && (
-        <button onClick={() => dispatch(prevSlide(craftNodeId))}>prev</button>
-      )}
-      {recipes && recipes.length - 1 > craftNode.currentSlide && (
-        <button onClick={() => dispatch(nextSlide(craftNodeId))}>next</button>
-      )}
-      <RecipeCard recipe={currentRecipe} itemClickCallBack={addChildNode} />
+      <div className={styles.craftCardInner}>
+        {0 < craftNode.currentSlide && (
+          <button onClick={() => dispatch(prevSlide(craftNodeId))}>prev</button>
+        )}
+        {recipes && recipes.length - 1 > craftNode.currentSlide && (
+          <button onClick={() => dispatch(nextSlide(craftNodeId))}>next</button>
+        )}
+        <RecipeCard recipe={currentRecipe} itemClickCallBack={addChildNode} />
+      </div>
+      <div className={styles.craftCardChildren}>
+        {childrenNodeIds.map((id) => <CraftCard craftNodeId={id}/>)}
+      </div>
     </div>
   )
 }

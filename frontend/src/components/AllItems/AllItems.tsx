@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { fetchAllItems } from "../../util/RecipeApi"
 import { Cell } from "../Cell/Cell"
 import { useAppDispatch } from "../../app/hooks"
-import { fetchRecipeByIdAction } from "../../features/recipe/recipeSlice"
+import { fetchRecipesByItemIdAction } from "../../features/recipe/recipeSlice"
 import styles from "./AllItems.module.css"
 import {
   addEntityToBoardThunk,

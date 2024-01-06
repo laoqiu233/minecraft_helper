@@ -6,26 +6,13 @@ import {
 } from "../../features/craftsBoard/craftsBoardSlice"
 import { CraftCard } from "../CraftCard/CraftCard"
 import styles from "./CraftBoard.module.css"
+import { useAppSelector } from "../../app/hooks"
 export function CraftBoard() {
-  const craftNodes: CraftNodes = useSelector(selectCraftNodes)
-
-  const renderSubNodes = (craftNodeId: number) => {
-    return (
-      <div className={styles.boardRoot}>
-        <CraftCard craftNodeId={craftNodeId} />
-        <div className={styles.boardChilds}>
-          {craftNodes[craftNodeId].childens.map((childrenNodeId) => {
-            return renderSubNodes(childrenNodeId)
-          })}
-        </div>
-      </div>
-    )
-  }
+  const hasNodes = useAppSelector(state => 0 in state.craftBoard.craftNodes)
 
   return (
     <div>
-      {/* {JSON.stringify(craftNodes)} */}
-      {craftNodes[0] && renderSubNodes(0)}
+      {hasNodes && <CraftCard craftNodeId={0}/>}
     </div>
   )
 }

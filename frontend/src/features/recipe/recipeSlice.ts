@@ -22,7 +22,7 @@ export const recipeSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(
-        fetchRecipeByIdAction.fulfilled,
+        fetchRecipesByItemIdAction.fulfilled,
         (
           state,
           action: PayloadAction<{ targetItemId: number; recipes: Recipe[] }>,
@@ -53,7 +53,7 @@ export const recipeSlice = createSlice({
   },
 })
 
-export const fetchRecipeByIdAction = createAsyncThunk(
+export const fetchRecipesByItemIdAction = createAsyncThunk(
   "recipe/fetchByIdStatus",
   async (targetItemId: number, thunkApi) => {
     const recipes = await fetchRecipes(targetItemId)

@@ -1,6 +1,6 @@
 import "./styles.css"
 import { AllItems } from "./components/AllItems/AllItems"
-import { CraftBoard } from "./components/craftBoard/CraftBoard"
+import { CraftBoard } from "./components/CraftBoard/CraftBoard"
 import { fetchRecipes } from "./util/RecipeApi"
 import { useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector } from "./app/hooks"
