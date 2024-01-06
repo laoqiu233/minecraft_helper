@@ -57,7 +57,7 @@ function App() {
         <AllItems />
       </div>
       <div className="app-main">
-        {!userLoading && (user === undefined ? loginButton : <UserWidget user={user} onLogoutClick={logout}/>)}
+        {/* {!userLoading && (user === undefined ? loginButton : <UserWidget user={user} onLogoutClick={logout}/>)} */}
         <CraftBoard />
       </div>
     </div>

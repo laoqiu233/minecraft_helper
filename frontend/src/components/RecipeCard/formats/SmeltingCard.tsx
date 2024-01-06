@@ -3,9 +3,10 @@ import styles from "../RecipeCard.module.css"
 
 interface SmeltingCardProps {
   recipe: Smelting
+  itemClickCallBack: (targetItemId: number) => void
 }
 
-export function SmeltingCard({ recipe }: SmeltingCardProps) {
+export function SmeltingCard({ recipe, itemClickCallBack }: SmeltingCardProps) {
   return (
     <div className="minecraft-card">
       <div className={styles.recipeCardHeader}>
@@ -20,7 +21,7 @@ export function SmeltingCard({ recipe }: SmeltingCardProps) {
         />
       </div>
       <div className={styles.recipeCardInner}>
-        <Cell items={[recipe.sourceItem]} amount={1} />
+        <Cell itemClickCallBack={itemClickCallBack} items={[recipe.sourceItem]} amount={1} />
         <div className={styles.arrow} />
         <Cell items={[recipe.resultItem]} amount={1} />
       </div>

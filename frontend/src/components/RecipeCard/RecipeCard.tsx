@@ -16,11 +16,11 @@ export function RecipeCard({ recipe, itemClickCallBack }: RecipeTypeProps) {
   if (!recipe) {
     return <p>fuck you1</p>
   } else if (recipe.CraftingShaped) {
-    return <CraftingShapedCard recipe={recipe.CraftingShaped} itemClickCallBack={ itemClickCallBack} />
+    return <CraftingShapedCard recipe={recipe.CraftingShaped} itemClickCallBack={itemClickCallBack} />
   } else if (recipe.CraftingShapeless) {
-    return <CraftingShapelessCard recipe={recipe.CraftingShapeless} itemClickCallBack={ itemClickCallBack} />
+    return <CraftingShapelessCard recipe={recipe.CraftingShapeless} itemClickCallBack={itemClickCallBack} />
   } else if (recipe.Smelting) {
-    return <SmeltingCard recipe={recipe.Smelting}/>
+    return <SmeltingCard  recipe={recipe.Smelting} itemClickCallBack={itemClickCallBack}/>
   } else {
     return <p>fuck you2</p>
   }

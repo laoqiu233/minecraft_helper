@@ -27,16 +27,16 @@ export function CraftCard({ craftNodeId }: CraftCardTypeProps) {
 
     return (
         <div className={styles.craftCard}>
-            <button
+            {0 < craftNode.currentSlide && <button
                 onClick={() => dispatch(prevSlide(craftNodeId))}
             >
                 prev
-            </button>
-            <button
+            </button>}
+            {(recipes && recipes.length - 1 > craftNode.currentSlide) && <button
                 onClick={() => dispatch(nextSlide(craftNodeId))}
             >
                 next
-            </button>
+            </button>}
             <RecipeCard recipe={currentRecipe} itemClickCallBack={addChildNode}/>
         </div>
     )

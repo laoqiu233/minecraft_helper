@@ -87,10 +87,15 @@ export const craftsBoardSlice = createSlice({
     nextSlide: (state, action: PayloadAction<number>) => {
       const craftNodeId = action.payload;
       state.craftNodes[craftNodeId].currentSlide += 1
+
+      state.craftNodes[craftNodeId].childens = []
+
     },
     prevSlide: (state, action: PayloadAction<number>) => {
       const craftNodeId = action.payload;
       state.craftNodes[craftNodeId].currentSlide -= 1
+
+      state.craftNodes[craftNodeId].childens = []
     },
   }
 })

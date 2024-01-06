@@ -21,7 +21,7 @@ export function CraftBoard() {
 
     return (
         <div>
-            {JSON.stringify(craftNodes)}
+            {/* {JSON.stringify(craftNodes)} */}
             {craftNodes[0] && renderSubNodes(0)}
         </div>
     )
