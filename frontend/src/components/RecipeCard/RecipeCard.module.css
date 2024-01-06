@@ -42,9 +42,22 @@
   background-color: #959595;
 }
 
+.like-button-pressed {
+  background-color: #a5a5a5;
+}
+
 .like-button img {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.like-button-group {
+  margin-top: 5px;
+  text-align: right;
+}
+
+.like-button-group>* {
+  margin-left: 3px;
 }

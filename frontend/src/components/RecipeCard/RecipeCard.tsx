@@ -29,7 +29,6 @@ function chooseRecipeCard(recipe: Recipe, itemClickCallBack: (targetItemId: numb
 }
 
 function LikeButtons(recipe?: Recipe) {
-  const userLoggedIn = useAppSelector(state => state.auth.user !== undefined)
   const dispatch = useAppDispatch()
 
   if (recipe) {
@@ -37,18 +36,17 @@ function LikeButtons(recipe?: Recipe) {
 
     return (
       <>
-        <button className={styles.likeButton} disabled={!userLoggedIn} onClick={() => {
-          const newStatus = baseRecipe.likeStatus == "like" ? "no_status" : "like"
+        <button className={styles.likeButton + " " + (baseRecipe.likeStatus === "like" ? styles.likeButtonPressed : "")} onClick={() => {
+          const newStatus = baseRecipe.likeStatus === "like" ? "no_status" : "like" 
           dispatch(likeRecipeByIdAction({recipeId: baseRecipe.id, likeStatus: newStatus}))
         }}>
-          <img src="images/heart.png" width="16px" className="sharp-image"/>
-          <img src="images/glint.png" className={styles.glint}/>
+          <img src={baseRecipe.likeStatus === "like" ? "images/like_clicked.gif" : "images/like.png"} width="16px" className="sharp-image"/>
         </button>
-        <button className={styles.likeButton} disabled={!userLoggedIn} onClick={() => {
-          const newStatus = baseRecipe.likeStatus == "dislike" ? "no_status" : "dislike"
+        <button className={styles.likeButton + " " + (baseRecipe.likeStatus === "dislike" ? styles.likeButtonPressed : "")} onClick={() => {
+          const newStatus = baseRecipe.likeStatus === "dislike" ? "no_status" : "dislike"
           dispatch(likeRecipeByIdAction({recipeId: baseRecipe.id, likeStatus: newStatus}))
         }}>
-          <img src="images/dislike.png" width="20px" className="sharp-image"/>
+          <img src={baseRecipe.likeStatus === "dislike" ? "images/dislike_clicked.gif" : "images/dislike.png"} width="20px" className="sharp-image"/>
         </button>
       </>
     )
@@ -60,13 +58,16 @@ function LikeButtons(recipe?: Recipe) {
 export function RecipeCard({ recipe, itemClickCallBack }: RecipeTypeProps) {
   const card = chooseRecipeCard(recipe, itemClickCallBack)
   const likeButtons = LikeButtons(recipe)
-  const likeStatus = recipe ? extractRecipe(recipe).likeStatus : null
+  const userLoggedIn = useAppSelector(state => state.auth.user !== undefined)
 
   return (
     <div className="minecraft-card">
       {card}
-      {likeButtons}
-      {likeStatus}
+      { userLoggedIn &&
+        <div className={styles.likeButtonGroup}>
+          {likeButtons}
+        </div>
+      }
     </div>
   )
 }
