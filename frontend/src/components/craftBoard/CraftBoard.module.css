@@ -1,18 +1,10 @@
-.board-root {
-  display: flex;
-  flex-basis: 100%;
-  flex-wrap: wrap;
-  height: fit-content;
-  align-items: flex-start;
+.board {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
 }
 
-.board-entity {
-  display: flex;
-  flex-basis: 100%;
-}
-
-.board-childs {
-  flex-basis: 100%;
-  display: flex;
-  flex-wrap: nowrap;
+.board-content {
+  position: absolute;
 }
