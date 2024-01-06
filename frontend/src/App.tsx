@@ -62,7 +62,7 @@ function App() {
 
   return (
     <div className="app">
-      <div style={{ position: "absolute", top: "10px", right: "10px" }}>
+      <div style={{ position: "absolute", top: "10px", right: "10px", zIndex: "1" }}>
         {!userLoading &&
           (user === undefined ? (
             loginButton
