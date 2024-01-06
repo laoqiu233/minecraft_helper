@@ -21,7 +21,7 @@ function CraftingCard({
   resultItemAmount,
 }: CraftingCardProps) {
   return (
-    <div className={styles.recipeCard}>
+    <div className="minecraft-card">
       <div className={styles.recipeCardHeader}>
         <span>Crafting</span>
         <img
