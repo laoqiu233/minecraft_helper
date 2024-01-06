@@ -52,9 +52,11 @@ export function CraftCard({ craftNodeId }: CraftCardTypeProps) {
         )}
         <RecipeCard recipe={currentRecipe} itemClickCallBack={addChildNode} />
       </div>
-      <div className={styles.craftCardChildren}>
-        {childrenNodeIds.map((id) => <CraftCard craftNodeId={id}/>)}
-      </div>
+      { childrenNodeIds.length > 0 &&
+        <div className={styles.craftCardChildren}>
+          {childrenNodeIds.map((id) => <CraftCard craftNodeId={id}/>)}
+        </div>
+      }
     </div>
   )
 }
