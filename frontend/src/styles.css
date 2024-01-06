@@ -21,3 +21,24 @@
   image-rendering: crisp-edges;
   image-rendering: pixelated;
 }
+
+.login-button {
+  color: black;
+  display: flex;
+  align-items: center;
+  border: 2px solid black;
+  border-radius: 9px;
+  padding: 7px 10px;
+}
+
+.login-button img {
+  margin-right: 10px;
+}
+
+.minecraft-card {
+  background-color: #c6c6c6;
+  border: 2px solid;
+  border-color: #dbdbdb #5b5b5b #5b5b5b #dbdbdb;
+  padding: 6px;
+  color: #3f3f3f;
+}

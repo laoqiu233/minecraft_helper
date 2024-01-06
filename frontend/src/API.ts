@@ -1,14 +1,18 @@
 import axios from "axios"
+import { store } from "./app/store"
 
-const API = axios.create({ baseURL: "http://localhost:8080/api" })
+const apiClient = axios.create({ baseURL: "http://localhost:8080/api" })
 
-API.interceptors.request.use((req) => {
-  // if (localStorage.getItem("user")) {
-  //   req.headers.Authorization = `Bearer ${
-  //     JSON.parse(localStorage.getItem("user")).token
-  //   }`;
-  // }
+apiClient.interceptors.request.use((req) => {
+  const token = store.getState().auth.accessToken
+
+  console.log(store.getState())
+
+  if (token !== undefined) {
+    req.headers.Authorization = `bearer ${token}`
+  }
+
   return req
 })
 
-export default API
+export default apiClient

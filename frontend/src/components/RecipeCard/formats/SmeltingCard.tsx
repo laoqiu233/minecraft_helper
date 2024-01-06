@@ -7,7 +7,7 @@ interface SmeltingCardProps {
 
 export function SmeltingCard({ recipe }: SmeltingCardProps) {
   return (
-    <div className={styles.recipeCard}>
+    <div className="minecraft-card">
       <div className={styles.recipeCardHeader}>
         <span>{recipe.smeltType === "smelting" ? "Smelting" : "Blasting"}</span>
         <img

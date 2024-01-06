@@ -1,4 +1,4 @@
-import API from "../API"
+import apiClient from "../API"
 
 function parseRecipeType(recipe: Recipe): string {
   if (recipe.CraftingShaped) {
@@ -94,14 +94,13 @@ export function parseId(recipe: Recipe): number {
 }
 
 export async function fetchRecipes(targetItemId: number): Promise<Recipe[]> {
-  let res = await API.get(`/items/${targetItemId}/recipes`)
+  let res = await apiClient.get(`/items/${targetItemId}/recipes`)
   let recipes: Recipe[] = res.data
-  console.log(recipes)
   return recipes
 }
 
 export async function fetchAllItems(): Promise<Item[]> {
-  let res = await API.get(`/items`)
+  let res = await apiClient.get(`/items`)
   let result: Item[] = res.data
   return result
 }
