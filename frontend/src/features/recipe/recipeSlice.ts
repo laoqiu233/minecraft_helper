@@ -18,32 +18,38 @@ const initialState: RecipesState = {
 export const recipeSlice = createSlice({
   name: "recipe",
   initialState,
-  reducers: {
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-    .addCase(
-      fetchRecipeByIdAction.fulfilled,
-      (state, action: PayloadAction<{targetItemId: number, recipes: Recipe[]}>) => {
-        state.recipes = state.recipes
-          .filter((r) => extractRecipe(r).resultItem.id !== action.payload.targetItemId)
-          .concat(action.payload.recipes)
-      },
-    )
-    .addCase(
-      likeRecipeByIdAction.fulfilled,
-      (state, action: PayloadAction<Recipe>) => {
-        const recipe = extractRecipe(action.payload)
-        const recipeIndex = state.recipes.findIndex((r) => extractRecipe(r).id == recipe.id)
-        state.recipes[recipeIndex] = action.payload
-      }
-    )
-    .addCase(
-      loggedOut,
-      (state, action) => {
-        state.recipes.forEach(r => extractRecipe(r).likeStatus = "no_status")
-      }
-    )
+      .addCase(
+        fetchRecipeByIdAction.fulfilled,
+        (
+          state,
+          action: PayloadAction<{ targetItemId: number; recipes: Recipe[] }>,
+        ) => {
+          state.recipes = state.recipes
+            .filter(
+              (r) =>
+                extractRecipe(r).resultItem.id !== action.payload.targetItemId,
+            )
+            .concat(action.payload.recipes)
+        },
+      )
+      .addCase(
+        likeRecipeByIdAction.fulfilled,
+        (state, action: PayloadAction<Recipe>) => {
+          const recipe = extractRecipe(action.payload)
+          const recipeIndex = state.recipes.findIndex(
+            (r) => extractRecipe(r).id == recipe.id,
+          )
+          state.recipes[recipeIndex] = action.payload
+        },
+      )
+      .addCase(loggedOut, (state, action) => {
+        state.recipes.forEach(
+          (r) => (extractRecipe(r).likeStatus = "no_status"),
+        )
+      })
   },
 })
 
@@ -51,19 +57,19 @@ export const fetchRecipeByIdAction = createAsyncThunk(
   "recipe/fetchByIdStatus",
   async (targetItemId: number, thunkApi) => {
     const recipes = await fetchRecipes(targetItemId)
-    return {targetItemId, recipes}
+    return { targetItemId, recipes }
   },
 )
 
 interface LikeRecipeData {
-  recipeId: number,
+  recipeId: number
   likeStatus: LikeStatus
 }
 
 export const likeRecipeByIdAction = createAsyncThunk(
   "recipe/recipeLiked",
-  async ({recipeId, likeStatus}: LikeRecipeData, thunkApi) => {
+  async ({ recipeId, likeStatus }: LikeRecipeData, thunkApi) => {
     await likeRecipe(recipeId, likeStatus)
     return await fetchRecipe(recipeId)
-  }
+  },
 )

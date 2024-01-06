@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import styles from "./Cell.module.css"
+import { Tooltip } from "../Tooltip/Tooltip"
 
 interface cellProps {
   items: Item[]
@@ -9,9 +10,6 @@ interface cellProps {
 
 export function Cell({ items, amount, itemClickCallBack }: cellProps) {
   const [itemCounter, setItemCounter] = useState(0)
-  const [mouseX, setMouseX] = useState(0)
-  const [mouseY, setMouseY] = useState(0)
-  const [showToolTip, setShowToolTip] = useState(false);
 
   useEffect(() => {
     setItemCounter(0)
@@ -27,30 +25,17 @@ export function Cell({ items, amount, itemClickCallBack }: cellProps) {
 
 
   return (
-    <div 
-      className={styles.invslot} 
-      onClick={() => {itemClickCallBack(items[itemCounter].id)}} 
-      onMouseMove={(e) => {
-        setMouseX(e.clientX)
-        setMouseY(e.clientY)
-      }}
-      onMouseEnter={() => setShowToolTip(true)}
-      onMouseLeave={() => setShowToolTip(false)}
-    >
-      {items[itemCounter] && (
-        <img
-          className={styles.invslotItemImage + ' sharp-image'}
-          src={"images" + items[itemCounter].image}
-          alt={items[itemCounter].name}
-        />
-      )}
-      {amount > 1 && <span className={styles.invslotItemCount}>{amount}</span>}
-      {showToolTip && items[itemCounter] && <div 
-          className={styles.tooltip}
-          style={{left: `${mouseX + 10}px`, top: `${mouseY - 40}px`}}
-        >
-          {items[itemCounter].name}
-        </div>}
-    </div>
+    <Tooltip tip={items[itemCounter]?.name}>
+      <div className={styles.invslot} onClick={() => {itemClickCallBack(items[itemCounter].id)}} >
+        {items[itemCounter] && (
+          <img
+            className={styles.invslotItemImage + ' sharp-image'}
+            src={"images" + items[itemCounter].image}
+            alt={items[itemCounter].name}
+          />
+        )}
+        {amount > 1 && <span className={styles.invslotItemCount}>{amount}</span>}
+      </div>
+    </Tooltip>
   )
 }

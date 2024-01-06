@@ -1,5 +1,5 @@
 interface UserProfile {
-    id: number
-    username: string
-    avatarUrl: string
+  id: number
+  username: string
+  avatarUrl: string
 }

@@ -1,4 +1,3 @@
-
 import "./styles.css"
 import { AllItems } from "./components/AllItems/AllItems"
 import { CraftBoard } from "./components/craftBoard/CraftBoard"
@@ -6,23 +5,34 @@ import { fetchRecipes } from "./util/RecipeApi"
 import { useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector } from "./app/hooks"
 import { exchangeGithubToken, getUserProfile } from "./util/AuthApi"
-import { accessTokenUpdated, fetchAuthorizedUserProfile, loggedOut } from "./features/auth/authSlice"
+import {
+  accessTokenUpdated,
+  fetchAuthorizedUserProfile,
+  loggedOut,
+} from "./features/auth/authSlice"
 import apiClient from "./API"
 import { UserWidget } from "./components/UserWidget/UserWidget"
 
 const loginButton = (
-  <a href={`https://github.com/login/oauth/authorize?client_id=${import.meta.env.VITE_GITHUB_OAUTH_CLIENT_ID}`} style={{textDecoration: "none"}}>
+  <a
+    href={`https://github.com/login/oauth/authorize?client_id=${
+      import.meta.env.VITE_GITHUB_OAUTH_CLIENT_ID
+    }`}
+    style={{ textDecoration: "none" }}
+  >
     <div className="login-button">
-      <img src="images/github.svg" width="32"/>
+      <img src="images/github.svg" width="32" />
       <span>Login with GitHub</span>
     </div>
   </a>
 )
 
 function App() {
-  const hasAccessToken = useAppSelector(state => state.auth.accessToken !== undefined)
-  const userLoading = useAppSelector(state => state.auth.loading)
-  const user = useAppSelector(state => state.auth.user)
+  const hasAccessToken = useAppSelector(
+    (state) => state.auth.accessToken !== undefined,
+  )
+  const userLoading = useAppSelector((state) => state.auth.loading)
+  const user = useAppSelector((state) => state.auth.user)
   const dispatch = useAppDispatch()
 
   // Check if redirected from GitHub Oauth
@@ -31,7 +41,7 @@ function App() {
     const code = urlParams.get("code")
 
     if (code !== null && !hasAccessToken) {
-      exchangeGithubToken(code).then(token => {
+      exchangeGithubToken(code).then((token) => {
         localStorage.setItem("accessToken", token)
         window.location.search = ""
         dispatch(accessTokenUpdated(token))
@@ -39,8 +49,7 @@ function App() {
     }
 
     if (hasAccessToken) {
-      dispatch(fetchAuthorizedUserProfile())
-      .catch(() => {
+      dispatch(fetchAuthorizedUserProfile()).catch(() => {
         localStorage.removeItem("accessToken")
       })
     }
@@ -53,8 +62,13 @@ function App() {
 
   return (
     <div className="app">
-      <div style={{position: "absolute", top: "10px", right: "10px"}}>
-        {!userLoading && (user === undefined ? loginButton : <UserWidget user={user} onLogoutClick={logout}/>)}
+      <div style={{ position: "absolute", top: "10px", right: "10px" }}>
+        {!userLoading &&
+          (user === undefined ? (
+            loginButton
+          ) : (
+            <UserWidget user={user} onLogoutClick={logout} />
+          ))}
       </div>
       <div className="app-sidebar">
         <AllItems />

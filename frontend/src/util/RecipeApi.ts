@@ -31,8 +31,11 @@ export async function fetchAllItems(): Promise<Item[]> {
   return result
 }
 
-export async function likeRecipe(recipeId: number, likeStatus: LikeStatus): Promise<void> {
+export async function likeRecipe(
+  recipeId: number,
+  likeStatus: LikeStatus,
+): Promise<void> {
   let response = await apiClient.patch(`/recipes/${recipeId}/like`, {
-    "status": likeStatus
+    status: likeStatus,
   })
 }

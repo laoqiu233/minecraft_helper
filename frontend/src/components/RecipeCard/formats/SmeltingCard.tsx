@@ -22,13 +22,21 @@ export function SmeltingCard({ recipe, itemClickCallBack }: SmeltingCardProps) {
         />
       </div>
       <div className={styles.recipeCardInner}>
-        <Cell itemClickCallBack={itemClickCallBack} items={[recipe.sourceItem]} amount={1} />
+        <Cell
+          itemClickCallBack={itemClickCallBack}
+          items={[recipe.sourceItem]}
+          amount={1}
+        />
         <div className={styles.arrow} />
-        <Cell items={[recipe.resultItem]} amount={1} itemClickCallBack={() => undefined}/>
+        <Cell
+          items={[recipe.resultItem]}
+          amount={1}
+          itemClickCallBack={() => undefined}
+        />
       </div>
       <div className={styles.recipeCardFooter}>
         <span>Smelting time: {recipe.smeltTime} ticks</span>
       </div>
-      </>
+    </>
   )
 }

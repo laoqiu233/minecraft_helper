@@ -1,33 +1,33 @@
 .user-widget {
-    position: relative;
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: center;
-    padding: 6px;
-    gap: 6px;
-    box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  padding: 6px;
+  gap: 6px;
+  box-sizing: border-box;
 }
 
 .user-avatar {
-    width: 40px;
+  width: 40px;
 }
 
 .user-name {
-    font-weight: bold;
-    color: white;
-    text-shadow: 2px 2px 0 #3F3F3F;
+  font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px 0 #3f3f3f;
 }
 
 .logout-button {
-    font-family: "Minecraft";
-    display: none;
-    position: absolute;
-    left: 0;
-    right: 0;
-    width: 100%;
-    bottom: 0px;
+  font-family: "Minecraft";
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  bottom: 0px;
 }
 
 .user-widget:hover .logout-button {
-    display: block;
+  display: block;
 }

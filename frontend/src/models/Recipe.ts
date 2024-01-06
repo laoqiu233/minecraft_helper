@@ -16,7 +16,7 @@ export type BaseRecipe = {
   resultItem: Item
   resultItemAmount: number
   recipeCategory: string
-  recipeGroup: string,
+  recipeGroup: string
   likeStatus: LikeStatus
 }
 
@@ -42,9 +42,14 @@ export type Other = {
 } & BaseRecipe
 
 export function extractRecipe(recipe: Recipe): BaseRecipe {
-  const baseRecipe = recipe.CraftingShaped || recipe.CraftingShapeless || recipe.Smelting || recipe.Other
+  const baseRecipe =
+    recipe.CraftingShaped ||
+    recipe.CraftingShapeless ||
+    recipe.Smelting ||
+    recipe.Other
 
-  if (baseRecipe === undefined) throw new Error("Empty recipe, this should not happen")
+  if (baseRecipe === undefined)
+    throw new Error("Empty recipe, this should not happen")
 
   return baseRecipe
 }

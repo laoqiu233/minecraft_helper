@@ -3,7 +3,7 @@ import styles from "../RecipeCard.module.css"
 import { CraftingShaped, CraftingShapeless } from "../../../models/Recipe"
 
 interface CraftingShapedCardProps {
-  recipe: CraftingShaped,
+  recipe: CraftingShaped
   itemClickCallBack: (targetItemId: number) => void
 }
 
@@ -23,7 +23,7 @@ function CraftingCard({
   itemsGrid,
   resultItem,
   resultItemAmount,
-  itemClickCallBack
+  itemClickCallBack,
 }: CraftingCardProps) {
   return (
     <>
@@ -39,19 +39,31 @@ function CraftingCard({
           {itemsGrid.map((row, i) => (
             <div key={i}>
               {row.map((items, j) => (
-                <Cell itemClickCallBack={itemClickCallBack} items={items} amount={1} key={`${i}-${j}`} />
+                <Cell
+                  itemClickCallBack={itemClickCallBack}
+                  items={items}
+                  amount={1}
+                  key={`${i}-${j}`}
+                />
               ))}
             </div>
           ))}
         </div>
         <div className={styles.arrow} />
-        <Cell items={[resultItem]} amount={resultItemAmount} itemClickCallBack={() => undefined} />
+        <Cell
+          items={[resultItem]}
+          amount={resultItemAmount}
+          itemClickCallBack={() => undefined}
+        />
       </div>
     </>
   )
 }
 
-export function CraftingShapedCard({ recipe, itemClickCallBack }: CraftingShapedCardProps) {
+export function CraftingShapedCard({
+  recipe,
+  itemClickCallBack,
+}: CraftingShapedCardProps) {
   const pattern = recipe.craftPattern.split("\n").map((v) => v.split(""))
   const gridSize = Math.max(
     pattern.length,
@@ -80,7 +92,10 @@ export function CraftingShapedCard({ recipe, itemClickCallBack }: CraftingShaped
   )
 }
 
-export function CraftingShapelessCard({ recipe, itemClickCallBack }: CraftingShapelessCardProps) {
+export function CraftingShapelessCard({
+  recipe,
+  itemClickCallBack,
+}: CraftingShapelessCardProps) {
   const gridSize = recipe.shapelessIngredients.length > 4 ? 3 : 2
   const itemsGrid = Array.from({ length: gridSize }, (e) =>
     Array.from({ length: gridSize }, (e) => Array<Item>(0)),

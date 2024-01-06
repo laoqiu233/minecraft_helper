@@ -7,7 +7,7 @@ export const store = configureStore({
   reducer: {
     recipes: recipeSlice.reducer,
     craftBoard: craftsBoardSlice.reducer,
-    auth: authSlice.reducer
+    auth: authSlice.reducer,
   },
 })
 
