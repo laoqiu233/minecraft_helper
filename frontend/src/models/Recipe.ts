@@ -2,48 +2,49 @@ interface IngredientsMap {
   [key: string]: Item[]
 }
 
-type Recipe = {
-  id: number,
+export type LikeStatus = "like" | "dislike" | "no_status"
+
+export type Recipe = {
   CraftingShaped?: CraftingShaped
   CraftingShapeless?: CraftingShapeless
   Smelting?: Smelting
   Other?: Other
 }
 
-type CraftingShaped = {
+export type BaseRecipe = {
   id: number
-  recipeCategory: string
-  recipeGroup: string
-  ingredients: IngredientsMap
   resultItem: Item
   resultItemAmount: number
-  craftPattern: string
+  recipeCategory: string
+  recipeGroup: string,
+  likeStatus: LikeStatus
 }
 
-type CraftingShapeless = {
-  id: number
-  recipeCategory: string
-  recipeGroup: string
+export type CraftingShaped = {
+  ingredients: IngredientsMap
+  craftPattern: string
+} & BaseRecipe
+
+export type CraftingShapeless = {
   shapelessIngredients: Item[][]
   resultItem: Item
   resultItemAmount: number
-}
+} & BaseRecipe
 
-type Smelting = {
-  id: number
-  recipeCategory: string
-  recipeGroup: string
+export type Smelting = {
   sourceItem: Item
-  resultItem: Item
-  resultItemAmount: number
   smeltTime: number
   smeltType: "smelting" | "blasting"
-}
+} & BaseRecipe
 
-type Other = {
-  id: number
-  resultItem: Item
+export type Other = {
   ingredients: IngredientsMap
-  craftPatten: string
-  resultItemAmount: number
+} & BaseRecipe
+
+export function extractRecipe(recipe: Recipe): BaseRecipe {
+  const baseRecipe = recipe.CraftingShaped || recipe.CraftingShapeless || recipe.Smelting || recipe.Other
+
+  if (baseRecipe === undefined) throw new Error("Empty recipe, this should not happen")
+
+  return baseRecipe
 }

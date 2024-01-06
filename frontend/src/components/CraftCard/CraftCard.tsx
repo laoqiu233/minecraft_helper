@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import { CraftNode, addChild, addChildEntityToBoardThunk, nextSlide, prevSlide } from "../../features/craftsBoard/craftsBoardSlice"
+import { extractRecipe, Recipe } from "../../models/Recipe"
 import { RecipeCard } from "../RecipeCard/RecipeCard"
 import styles from "./CraftCard.module.css"
 
@@ -15,8 +16,8 @@ export function CraftCard({ craftNodeId }: CraftCardTypeProps) {
         state.craftBoard.craftNodes[craftNodeId]
     )
 
-    const recipes: Recipe[] = useAppSelector((state) => {
-        return state.recipes.recipes[craftNode.targetItemId];
+    const recipes = useAppSelector((state) => {
+        return state.recipes.recipes.filter((r) => extractRecipe(r).resultItem.id == craftNode.targetItemId)
     })
     
     const currentRecipe = recipes ? recipes[craftNode.currentSlide % recipes.length]: undefined

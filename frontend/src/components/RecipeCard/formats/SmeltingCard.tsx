@@ -1,5 +1,6 @@
 import { Cell } from "../../Cell/Cell"
 import styles from "../RecipeCard.module.css"
+import { Smelting } from "../../../models/Recipe"
 
 interface SmeltingCardProps {
   recipe: Smelting
@@ -8,7 +9,7 @@ interface SmeltingCardProps {
 
 export function SmeltingCard({ recipe, itemClickCallBack }: SmeltingCardProps) {
   return (
-    <div className="minecraft-card">
+    <>
       <div className={styles.recipeCardHeader}>
         <span>{recipe.smeltType === "smelting" ? "Smelting" : "Blasting"}</span>
         <img
@@ -23,11 +24,11 @@ export function SmeltingCard({ recipe, itemClickCallBack }: SmeltingCardProps) {
       <div className={styles.recipeCardInner}>
         <Cell itemClickCallBack={itemClickCallBack} items={[recipe.sourceItem]} amount={1} />
         <div className={styles.arrow} />
-        <Cell items={[recipe.resultItem]} amount={1} />
+        <Cell items={[recipe.resultItem]} amount={1} itemClickCallBack={() => undefined}/>
       </div>
       <div className={styles.recipeCardFooter}>
         <span>Smelting time: {recipe.smeltTime} ticks</span>
       </div>
-    </div>
+      </>
   )
 }

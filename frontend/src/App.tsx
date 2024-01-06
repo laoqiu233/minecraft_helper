@@ -2,7 +2,7 @@
 import "./styles.css"
 import { AllItems } from "./components/AllItems/AllItems"
 import { CraftBoard } from "./components/craftBoard/CraftBoard"
-import { fetchRecipe } from "./util/RecipeApi"
+import { fetchRecipes } from "./util/RecipeApi"
 import { useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector } from "./app/hooks"
 import { exchangeGithubToken, getUserProfile } from "./util/AuthApi"
@@ -53,11 +53,13 @@ function App() {
 
   return (
     <div className="app">
+      <div style={{position: "absolute", top: "10px", right: "10px"}}>
+        {!userLoading && (user === undefined ? loginButton : <UserWidget user={user} onLogoutClick={logout}/>)}
+      </div>
       <div className="app-sidebar">
         <AllItems />
       </div>
       <div className="app-main">
-        {/* {!userLoading && (user === undefined ? loginButton : <UserWidget user={user} onLogoutClick={logout}/>)} */}
         <CraftBoard />
       </div>
     </div>

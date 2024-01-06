@@ -1,5 +1,6 @@
 import { Cell } from "../../Cell/Cell"
 import styles from "../RecipeCard.module.css"
+import { CraftingShaped, CraftingShapeless } from "../../../models/Recipe"
 
 interface CraftingShapedCardProps {
   recipe: CraftingShaped,
@@ -25,7 +26,7 @@ function CraftingCard({
   itemClickCallBack
 }: CraftingCardProps) {
   return (
-    <div className="minecraft-card">
+    <>
       <div className={styles.recipeCardHeader}>
         <span>Crafting</span>
         <img
@@ -44,9 +45,9 @@ function CraftingCard({
           ))}
         </div>
         <div className={styles.arrow} />
-        <Cell items={[resultItem]} amount={resultItemAmount} />
+        <Cell items={[resultItem]} amount={resultItemAmount} itemClickCallBack={() => undefined} />
       </div>
-    </div>
+    </>
   )
 }
 
