@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
 import { RootState } from "../../app/store"
-import { fetchRecipe, parseId } from "../../util/RecipeApi"
+import { fetchRecipes, parseId } from "../../util/RecipeApi"
 
 
 
@@ -11,7 +11,7 @@ interface RecipesState {
 }
 
 interface RecipesMap {
-  [key: number]: Recipe
+  [key: number]: Recipe[] // key is targetItemId
 }
 
 const initialState: RecipesState = {
@@ -27,9 +27,8 @@ export const recipeSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(
       fetchRecipeByIdAction.fulfilled,
-      (state, action: PayloadAction<Recipe>) => {
-        let id = parseId(action.payload)
-        state.recipes[action.payload.id] = (action.payload)
+      (state, action: PayloadAction<{targetItemId: number, recipes: Recipe[]}>) => {
+        state.recipes[action.payload.targetItemId] = action.payload.recipes
       },
     )
   },
@@ -37,8 +36,8 @@ export const recipeSlice = createSlice({
 
 export const fetchRecipeByIdAction = createAsyncThunk(
   "recipe/fetchByIdStatus",
-  async (recipeId: number, thunkApi) => {
-    const recipe = await fetchRecipe(recipeId)
-    return recipe
+  async (targetItemId: number, thunkApi) => {
+    const recipes = await fetchRecipes(targetItemId)
+    return {targetItemId, recipes}
   },
 )

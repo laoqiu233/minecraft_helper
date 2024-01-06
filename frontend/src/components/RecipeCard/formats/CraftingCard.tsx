@@ -2,23 +2,27 @@ import { Cell } from "../../Cell/Cell"
 import styles from "../RecipeCard.module.css"
 
 interface CraftingShapedCardProps {
-  recipe: CraftingShaped
+  recipe: CraftingShaped,
+  itemClickCallBack: (targetItemId: number) => void
 }
 
 interface CraftingShapelessCardProps {
   recipe: CraftingShapeless
+  itemClickCallBack: (targetItemId: number) => void
 }
 
 interface CraftingCardProps {
   itemsGrid: Item[][][]
   resultItem: Item
   resultItemAmount: number
+  itemClickCallBack: (targetItemId: number) => void
 }
 
 function CraftingCard({
   itemsGrid,
   resultItem,
   resultItemAmount,
+  itemClickCallBack
 }: CraftingCardProps) {
   return (
     <div className={styles.recipeCard}>
@@ -34,7 +38,7 @@ function CraftingCard({
           {itemsGrid.map((row, i) => (
             <div key={i}>
               {row.map((items, j) => (
-                <Cell items={items} amount={1} key={`${i}-${j}`} />
+                <Cell itemClickCallBack={itemClickCallBack} items={items} amount={1} key={`${i}-${j}`} />
               ))}
             </div>
           ))}
@@ -46,7 +50,7 @@ function CraftingCard({
   )
 }
 
-export function CraftingShapedCard({ recipe }: CraftingShapedCardProps) {
+export function CraftingShapedCard({ recipe, itemClickCallBack }: CraftingShapedCardProps) {
   const pattern = recipe.craftPattern.split("\n").map((v) => v.split(""))
   const gridSize = Math.max(
     pattern.length,
@@ -70,11 +74,12 @@ export function CraftingShapedCard({ recipe }: CraftingShapedCardProps) {
       itemsGrid={itemsGrid}
       resultItem={recipe.resultItem}
       resultItemAmount={recipe.resultItemAmount}
+      itemClickCallBack={itemClickCallBack}
     />
   )
 }
 
-export function CraftingShapelessCard({ recipe }: CraftingShapelessCardProps) {
+export function CraftingShapelessCard({ recipe, itemClickCallBack }: CraftingShapelessCardProps) {
   const gridSize = recipe.shapelessIngredients.length > 4 ? 3 : 2
   const itemsGrid = Array.from({ length: gridSize }, (e) =>
     Array.from({ length: gridSize }, (e) => Array<Item>(0)),
@@ -89,6 +94,7 @@ export function CraftingShapelessCard({ recipe }: CraftingShapelessCardProps) {
       itemsGrid={itemsGrid}
       resultItem={recipe.resultItem}
       resultItemAmount={recipe.resultItemAmount}
+      itemClickCallBack={itemClickCallBack}
     />
   )
 }

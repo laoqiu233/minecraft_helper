@@ -93,11 +93,11 @@ export function parseId(recipe: Recipe): number {
   throw new Error("Unknown recipe type")
 }
 
-export async function fetchRecipes(id: number): Promise<Recipe> {
-  let res = await API.get(`/recipes/${id}`)
-  let recipe: Recipe = res.data
-
-  return recipe
+export async function fetchRecipes(targetItemId: number): Promise<Recipe[]> {
+  let res = await API.get(`/items/${targetItemId}/recipes`)
+  let recipes: Recipe[] = res.data
+  console.log(recipes)
+  return recipes
 }
 
 export async function fetchAllItems(): Promise<Item[]> {

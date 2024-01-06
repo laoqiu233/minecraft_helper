@@ -8,22 +8,20 @@ import { SmeltingCard } from "./formats/SmeltingCard"
 import { useAppSelector } from "../../app/hooks"
 
 interface RecipeTypeProps {
-  recipeId: number
+  recipe: Recipe,
+  itemClickCallBack: (targetItemId: number) => void
 }
 
-export function RecipeCard({ recipeId }: RecipeTypeProps) {
-  const recipe: Recipe = useAppSelector((state) => {
-    return state.recipes.recipes[recipeId];
-  })
+export function RecipeCard({ recipe, itemClickCallBack }: RecipeTypeProps) {
   if (!recipe) {
-    return <p>fuck you</p>
+    return <p>fuck you1</p>
   } else if (recipe.CraftingShaped) {
-    return <CraftingShapedCard recipe={recipe.CraftingShaped} />
+    return <CraftingShapedCard recipe={recipe.CraftingShaped} itemClickCallBack={ itemClickCallBack} />
   } else if (recipe.CraftingShapeless) {
-    return <CraftingShapelessCard recipe={recipe.CraftingShapeless} />
+    return <CraftingShapelessCard recipe={recipe.CraftingShapeless} itemClickCallBack={ itemClickCallBack} />
   } else if (recipe.Smelting) {
-    return <SmeltingCard recipe={recipe.Smelting} />
+    return <SmeltingCard recipe={recipe.Smelting}/>
   } else {
-    return <p>fuck you</p>
+    return <p>fuck you2</p>
   }
 }

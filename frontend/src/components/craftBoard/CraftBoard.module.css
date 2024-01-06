@@ -1,0 +1,16 @@
+.board-root {
+    display: flex;
+    flex-basis: 100%;
+    flex-wrap: wrap;
+}
+
+.board-entity {
+    display: flex;
+    flex-basis: 100%;
+}
+
+.board-childs {
+    flex-basis: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+}

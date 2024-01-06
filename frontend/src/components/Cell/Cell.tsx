@@ -4,12 +4,16 @@ import styles from "./Cell.module.css"
 interface cellProps {
   items: Item[]
   amount: number
+  itemClickCallBack: (targetItemId: number) => void
 }
 
-export function Cell({ items, amount }: cellProps) {
+export function Cell({ items, amount, itemClickCallBack }: cellProps) {
   const [itemCounter, setItemCounter] = useState(0)
 
+
+
   useEffect(() => {
+    setItemCounter(0)
     const interval = setInterval(() => {
       if (items.length > 0) {
         setItemCounter((x) => (x + 1) % items.length)
@@ -17,10 +21,12 @@ export function Cell({ items, amount }: cellProps) {
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [items.length])
+
+
 
   return (
-    <div className={styles.invslot}>
+    <div className={styles.invslot} onClick={() => {itemClickCallBack(items[itemCounter].id)}}>
       {items[itemCounter] ? (
         <img
           className={styles.invslotItemImage + ' sharp-image'}

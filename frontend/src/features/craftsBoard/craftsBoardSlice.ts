@@ -10,17 +10,21 @@ export interface CraftNodes {
 }
 
 export interface CraftNode {
-    recipeId: number,
+    targetItemId: number,
+    currentSlide: number,
     childens: number[]
 }
 
 interface CraftsBoardState {
-  craftNodes: CraftNodes
+  craftNodes: CraftNodes,
+  currentNodeId: number
 }
 
 const initialState: CraftsBoardState = {
   craftNodes: {},
+  currentNodeId: 0
 }
+
 
 export const addEntityToBoardThunk = createAsyncThunk<
   void,
@@ -29,26 +33,69 @@ export const addEntityToBoardThunk = createAsyncThunk<
     dispatch: AppDispatch,
     state: RootState
   }
->('board/addEntity',async (recipeId:number, thunkApi) => {
-  thunkApi.dispatch(fetchRecipeByIdAction(recipeId))
-  thunkApi.dispatch(pasteNewRoot(recipeId))
+>('board/addEntity',async (itemId:number, thunkApi) => {
+  thunkApi.dispatch(fetchRecipeByIdAction(itemId))
+  thunkApi.dispatch(pasteNewRoot(itemId))
+})
+
+
+export const addChildEntityToBoardThunk = createAsyncThunk<
+  void,
+  {parentNodeId: number, childTargetItemId: number},
+  {
+    dispatch: AppDispatch,
+    state: RootState
+  }
+>('board/addEntity', async (payload, thunkApi) => {
+  const state = thunkApi.getState()
+  const nodeChildrens = state.craftBoard.craftNodes[payload.parentNodeId].childens;
+  const isAlreadyChild = nodeChildrens.map((childNodeId) => {
+    return state.craftBoard.craftNodes[childNodeId].targetItemId
+  }).some((targetChildItemId) => {
+    return targetChildItemId == payload.childTargetItemId
+  })
+  if (!isAlreadyChild) {
+    thunkApi.dispatch(fetchRecipeByIdAction(payload.childTargetItemId))
+    thunkApi.dispatch(addChild(payload))
+  }
 }) 
+
 
 export const craftsBoardSlice = createSlice({
   name: "craftBoard",
   initialState,
   reducers: {
-    addChild: (state, action: PayloadAction<{parentId: number, childId: number}>) => {
-      state.craftNodes[action.payload.parentId].childens.push(action.payload.childId)
+    addChild: (state, action: PayloadAction<{parentNodeId: number, childTargetItemId: number}>) => {
+      state.craftNodes[state.currentNodeId] = {
+        targetItemId: action.payload.childTargetItemId,
+        currentSlide: 0,
+        childens: []
+      }
+      state.craftNodes[action.payload.parentNodeId].childens.push(state.currentNodeId)
+      state.currentNodeId += 1
     },
     pasteNewRoot: (state, action: PayloadAction<number>) => {
       state.craftNodes = {
-        0: {recipeId: action.payload, childens: []}
+        0: {
+          targetItemId: action.payload,
+          currentSlide: 0,
+          childens: []
+        }
       }
-    }
+      state.currentNodeId = 1
+    },
+    nextSlide: (state, action: PayloadAction<number>) => {
+      const craftNodeId = action.payload;
+      state.craftNodes[craftNodeId].currentSlide += 1
+    },
+    prevSlide: (state, action: PayloadAction<number>) => {
+      const craftNodeId = action.payload;
+      state.craftNodes[craftNodeId].currentSlide -= 1
+    },
   }
 })
 
-export const { addChild, pasteNewRoot } = craftsBoardSlice.actions
+
+export const { addChild, pasteNewRoot, nextSlide, prevSlide } = craftsBoardSlice.actions
 
 export const selectCraftNodes = (state: RootState) => state.craftBoard.craftNodes
