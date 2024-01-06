@@ -37,7 +37,7 @@ export function AllItems() {
               className={styles.itemBtn}
               onClick={() => dispatch(addEntityToBoardThunk(item.id))}
             >
-              <Cell items={[item]} />
+              <Cell items={[item]} amount={1} />
             </button>
           )
         })}

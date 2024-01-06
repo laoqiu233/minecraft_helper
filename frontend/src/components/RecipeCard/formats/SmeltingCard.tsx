@@ -31,7 +31,6 @@ export function SmeltingCard({ recipe, itemClickCallBack }: SmeltingCardProps) {
         <Cell
           items={[recipe.resultItem]}
           amount={1}
-          itemClickCallBack={() => undefined}
         />
       </div>
       <div className={styles.recipeCardFooter}>

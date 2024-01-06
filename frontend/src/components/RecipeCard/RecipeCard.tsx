@@ -1,5 +1,4 @@
 import styles from "./RecipeCard.module.css"
-import { Cell } from "../Cell/Cell"
 import {
   CraftingShapedCard,
   CraftingShapelessCard,

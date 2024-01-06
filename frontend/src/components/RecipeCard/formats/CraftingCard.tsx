@@ -53,7 +53,6 @@ function CraftingCard({
         <Cell
           items={[resultItem]}
           amount={resultItemAmount}
-          itemClickCallBack={() => undefined}
         />
       </div>
     </>
