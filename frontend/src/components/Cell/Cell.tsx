@@ -26,7 +26,7 @@ export function Cell({ items, amount, itemClickCallBack }: cellProps) {
 
   return (
     <Tooltip tip={items[itemCounter]?.name}>
-      <div className={styles.invslot} onClick={() => {itemClickCallBack?.(items[itemCounter].id)}} >
+      <div className={styles.invslot + (itemClickCallBack ? " clickable" : "")} onClick={() => {itemClickCallBack?.(items[itemCounter].id)}} >
         {items[itemCounter] && (
           <img
             className={styles.invslotItemImage + ' sharp-image'}

@@ -3,6 +3,8 @@ import type { PayloadAction } from "@reduxjs/toolkit"
 import { AppDispatch, RootState } from "../../app/store"
 import { ThunkAction } from "redux-thunk"
 import { fetchRecipesByItemIdAction } from "../recipe/recipeSlice"
+import { AbstractDrop } from "../../models/Drop"
+import { fetchDrops } from "../../util/DropApi"
 
 export interface CraftNodes {
   [key: number]: CraftNode
@@ -12,6 +14,7 @@ export interface CraftNode {
   targetItemId: number
   currentSlide: number
   children: number[]
+  drop: AbstractDrop[]
 }
 
 interface CraftsBoardState {
@@ -33,8 +36,10 @@ export const addEntityToBoardThunk = createAsyncThunk<
   }
 >("board/addEntity", async (itemId: number, thunkApi) => {
   thunkApi.dispatch(fetchRecipesByItemIdAction(itemId))
-  thunkApi.dispatch(pasteNewRoot(itemId))
+  const drop: AbstractDrop[] = await fetchDrops(itemId)
+  thunkApi.dispatch(pasteNewRoot({itemId: itemId, drop: drop}))
 })
+
 
 export const addChildEntityToBoardThunk = createAsyncThunk<
   void,
@@ -56,7 +61,8 @@ export const addChildEntityToBoardThunk = createAsyncThunk<
     })
   if (!isAlreadyChild) {
     thunkApi.dispatch(fetchRecipesByItemIdAction(payload.childTargetItemId))
-    thunkApi.dispatch(addChild(payload))
+    const drop: AbstractDrop[] = await fetchDrops(payload.childTargetItemId)
+    thunkApi.dispatch(addChild({...payload, drop: drop}))
   }
 })
 
@@ -69,24 +75,27 @@ export const craftsBoardSlice = createSlice({
       action: PayloadAction<{
         parentNodeId: number
         childTargetItemId: number
+        drop: AbstractDrop[]
       }>,
     ) => {
       state.craftNodes[state.currentNodeId] = {
         targetItemId: action.payload.childTargetItemId,
         currentSlide: 0,
         children: [],
+        drop: action.payload.drop
       }
       state.craftNodes[action.payload.parentNodeId].children.push(
         state.currentNodeId,
       )
       state.currentNodeId += 1
     },
-    pasteNewRoot: (state, action: PayloadAction<number>) => {
+    pasteNewRoot: (state, action: PayloadAction<{itemId: number, drop: AbstractDrop[]}>) => {
       state.craftNodes = {
         0: {
-          targetItemId: action.payload,
+          targetItemId: action.payload.itemId,
           currentSlide: 0,
           children: [],
+          drop: action.payload.drop
         },
       }
       state.currentNodeId = 1
@@ -102,11 +111,11 @@ export const craftsBoardSlice = createSlice({
       state.craftNodes[craftNodeId].currentSlide -= 1
 
       state.craftNodes[craftNodeId].children = []
-    },
+    }
   },
 })
 
-export const { addChild, pasteNewRoot, nextSlide, prevSlide } =
+export const { addChild, pasteNewRoot, nextSlide, prevSlide} =
   craftsBoardSlice.actions
 
 export const selectCraftNodes = (state: RootState) =>

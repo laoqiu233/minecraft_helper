@@ -8,6 +8,7 @@ import {
   addEntityToBoardThunk,
   pasteNewRoot,
 } from "../../features/craftsBoard/craftsBoardSlice"
+import { fetchDrops } from "../../util/DropApi"
 
 function createArrayOfArrays<T>(flatArray: T[], subarrayLength: number): T[][] {
   return Array.from(
@@ -27,18 +28,19 @@ export function AllItems() {
 
   const dispatch = useAppDispatch()
 
+  const addEntityToBoardCallBack = (itemId: number) => {
+    dispatch(
+      addEntityToBoardThunk(itemId)
+    )
+  }
+
   let tmpItems = createArrayOfArrays<Item>(items, tableWidth)
   let itemsUI = tmpItems.map((items) => {
     return (
       <div>
         {items.map((item) => {
           return (
-            <button
-              className={styles.itemBtn}
-              onClick={() => dispatch(addEntityToBoardThunk(item.id))}
-            >
-              <Cell items={[item]} amount={1} />
-            </button>
+              <Cell itemClickCallBack={addEntityToBoardCallBack} items={[item]} amount={1} />
           )
         })}
       </div>
