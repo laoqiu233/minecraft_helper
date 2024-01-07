@@ -8,18 +8,19 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import { likeRecipeByIdAction } from "../../features/recipe/recipeSlice"
 import { Recipe, extractRecipe } from "../../models/Recipe"
 import { Tooltip } from "../Tooltip/Tooltip"
+import { StoneCutterCard } from "./formats/StoneCutterCard"
 
 interface RecipeTypeProps {
-  recipe: Recipe
-  itemClickCallBack: (targetItemId: number) => void
+  recipe?: Recipe
+  itemClickCallBack?: (targetItemId: number) => void
 }
 
 function chooseRecipeCard(
-  recipe: Recipe,
-  itemClickCallBack: (targetItemId: number) => void,
+  recipe?: Recipe,
+  itemClickCallBack?: (targetItemId: number) => void,
 ) {
   if (!recipe) {
-    return <p>fuck you1</p>
+    return <p>fuck you</p>
   } else if (recipe.CraftingShaped) {
     return (
       <CraftingShapedCard
@@ -41,8 +42,15 @@ function chooseRecipeCard(
         itemClickCallBack={itemClickCallBack}
       />
     )
+  } else if (recipe.StoneCutter) {
+    return (
+      <StoneCutterCard
+        recipe={recipe.StoneCutter}
+        itemClickCallBack={itemClickCallBack}
+      />
+    )
   } else {
-    return <p>fuck you2</p>
+    return <p>Recipe not available</p>
   }
 }
 

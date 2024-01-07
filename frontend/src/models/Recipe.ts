@@ -8,6 +8,7 @@ export type Recipe = {
   CraftingShaped?: CraftingShaped
   CraftingShapeless?: CraftingShapeless
   Smelting?: Smelting
+  StoneCutter?: StoneCutter
   Other?: Other
 }
 
@@ -37,6 +38,10 @@ export type Smelting = {
   smeltType: "smelting" | "blasting"
 } & BaseRecipe
 
+export type StoneCutter = {
+  sourceItem: Item
+} & BaseRecipe
+
 export type Other = {
   ingredients: IngredientsMap
 } & BaseRecipe
@@ -46,6 +51,7 @@ export function extractRecipe(recipe: Recipe): BaseRecipe {
     recipe.CraftingShaped ||
     recipe.CraftingShapeless ||
     recipe.Smelting ||
+    recipe.StoneCutter ||
     recipe.Other
 
   if (baseRecipe === undefined)
