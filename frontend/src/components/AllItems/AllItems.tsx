@@ -5,6 +5,7 @@ import { useAppDispatch } from "../../app/hooks"
 import { fetchRecipesByItemIdAction } from "../../features/recipe/recipeSlice"
 import styles from "./AllItems.module.css"
 import {
+  NodeTargetType,
   addEntityToBoardThunk,
   pasteNewRoot,
 } from "../../features/craftsBoard/craftsBoardSlice"
@@ -28,7 +29,7 @@ export function AllItems() {
 
   const dispatch = useAppDispatch()
 
-  const addEntityToBoardCallBack = (itemId: number) => {
+  const addEntityToBoardCallBack = (itemId: number, nodeType: NodeTargetType) => {
     dispatch(
       addEntityToBoardThunk(itemId)
     )
@@ -40,7 +41,7 @@ export function AllItems() {
       <div>
         {items.map((item) => {
           return (
-              <Cell itemClickCallBack={addEntityToBoardCallBack} items={[item]} amount={1} />
+              <Cell worldEntityClickCallBack={addEntityToBoardCallBack} items={[item]} amount={1} />
           )
         })}
       </div>

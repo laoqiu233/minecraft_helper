@@ -1,13 +1,14 @@
 import { StoneCutter } from "../../../models/Recipe";
 import styles from "../RecipeCard.module.css"
 import { Cell } from "../../Cell/Cell";
+import { NodeTargetType } from "../../../features/craftsBoard/craftsBoardSlice";
 
 interface StoneCutterCardProps {
     recipe: StoneCutter
-    itemClickCallBack?: (targetItemId: number) => void
+    worldEntityClickCallBack?: (targetId: number, targetType: NodeTargetType) => void
 }
 
-export function StoneCutterCard({recipe, itemClickCallBack}: StoneCutterCardProps) {
+export function StoneCutterCard({recipe, worldEntityClickCallBack}: StoneCutterCardProps) {
     return (
         <>
             <div className={styles.recipeCardHeader}>
@@ -20,7 +21,7 @@ export function StoneCutterCard({recipe, itemClickCallBack}: StoneCutterCardProp
             </div>
             <div className={styles.recipeCardInner}>
                 <Cell
-                itemClickCallBack={itemClickCallBack}
+                worldEntityClickCallBack={worldEntityClickCallBack}
                 items={[recipe.sourceItem]}
                 amount={1}
                 />

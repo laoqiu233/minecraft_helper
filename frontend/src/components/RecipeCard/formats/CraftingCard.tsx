@@ -1,29 +1,30 @@
 import { Cell } from "../../Cell/Cell"
 import styles from "../RecipeCard.module.css"
 import { CraftingShaped, CraftingShapeless } from "../../../models/Recipe"
+import { NodeTargetType } from "../../../features/craftsBoard/craftsBoardSlice"
 
 interface CraftingShapedCardProps {
   recipe: CraftingShaped
-  itemClickCallBack?: (targetItemId: number) => void
+  worldEntityClickCallBack?: (targetId: number, targetType: NodeTargetType) => void
 }
 
 interface CraftingShapelessCardProps {
   recipe: CraftingShapeless
-  itemClickCallBack?: (targetItemId: number) => void
+  worldEntityClickCallBack?: (targetId: number, targetType: NodeTargetType) => void
 }
 
 interface CraftingCardProps {
   itemsGrid: Item[][][]
   resultItem: Item
   resultItemAmount: number
-  itemClickCallBack?: (targetItemId: number) => void
+  worldEntityClickCallBack?: (targetId: number, targetType: NodeTargetType) => void
 }
 
 function CraftingCard({
   itemsGrid,
   resultItem,
   resultItemAmount,
-  itemClickCallBack,
+  worldEntityClickCallBack,
 }: CraftingCardProps) {
   return (
     <>
@@ -40,7 +41,7 @@ function CraftingCard({
             <div key={i}>
               {row.map((items, j) => (
                 <Cell
-                  itemClickCallBack={itemClickCallBack}
+                  worldEntityClickCallBack={worldEntityClickCallBack}
                   items={items}
                   amount={1}
                   key={`${i}-${j}`}
@@ -61,7 +62,7 @@ function CraftingCard({
 
 export function CraftingShapedCard({
   recipe,
-  itemClickCallBack,
+  worldEntityClickCallBack,
 }: CraftingShapedCardProps) {
   const pattern = recipe.craftPattern.split("\n").map((v) => v.split(""))
   const gridSize = Math.max(
@@ -86,14 +87,14 @@ export function CraftingShapedCard({
       itemsGrid={itemsGrid}
       resultItem={recipe.resultItem}
       resultItemAmount={recipe.resultItemAmount}
-      itemClickCallBack={itemClickCallBack}
+      worldEntityClickCallBack={worldEntityClickCallBack}
     />
   )
 }
 
 export function CraftingShapelessCard({
   recipe,
-  itemClickCallBack,
+  worldEntityClickCallBack,
 }: CraftingShapelessCardProps) {
   const gridSize = recipe.shapelessIngredients.length > 4 ? 3 : 2
   const itemsGrid = Array.from({ length: gridSize }, (e) =>
@@ -109,7 +110,7 @@ export function CraftingShapelessCard({
       itemsGrid={itemsGrid}
       resultItem={recipe.resultItem}
       resultItemAmount={recipe.resultItemAmount}
-      itemClickCallBack={itemClickCallBack}
+      worldEntityClickCallBack={worldEntityClickCallBack}
     />
   )
 }

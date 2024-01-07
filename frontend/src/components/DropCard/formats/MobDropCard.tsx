@@ -4,12 +4,14 @@ import { fetchItem } from "../../../util/RecipeApi";
 import { BaseDropInfo } from "./BaseDropInfo";
 import { Mob } from "../../../models/Mob";
 import { fetchMob } from "../../../util/WorldApi";
+import { NodeTargetType } from "../../../features/craftsBoard/craftsBoardSlice";
 
 interface MobDropCardProps {
     drop: MobDrop
+    worldEntityClickCallBack: (targetId: number, targetType: NodeTargetType) => void
 }
 
-export function MobDropCard({ drop }: MobDropCardProps) {
+export function MobDropCard({ drop, worldEntityClickCallBack }: MobDropCardProps) {
     const [mob, setMob] = useState<Mob | undefined>(undefined)
 
     useEffect(() => {
@@ -20,7 +22,8 @@ export function MobDropCard({ drop }: MobDropCardProps) {
     return (
         <div>
             <BaseDropInfo drop={drop}/>
-            <span>Drops from: <br /> {mob?.name}</span>
+            <span>Drops from: <br /></span>
+            {mob && <a className="clickable" onClick={() => worldEntityClickCallBack(mob.id, "mob")}>{mob?.name}</a>}
         </div>
     )
 }

@@ -1,3 +1,4 @@
+import { NodeTargetType } from "../../features/craftsBoard/craftsBoardSlice";
 import { AbstractDrop, BiomeDrop, ChestDrop, FishingDrop, GiftDrop, MobDrop } from "../../models/Drop";
 import { BiomeDropCard } from "./formats/BiomeDropCard";
 import { ChestDropCard } from "./formats/ChestDropCard";
@@ -7,10 +8,11 @@ import { MobDropCard } from "./formats/MobDropCard";
 
 interface DropCardProps {
     drop: AbstractDrop
+    worldEntityClickCallBack: (targetId: number, targetType: NodeTargetType) => void
 }
 
 
-const chooseDropCard = (drop: AbstractDrop) => {
+const chooseDropCard = ({ drop, worldEntityClickCallBack }: DropCardProps) => {
     if (drop.type == "biome") {
         return (<BiomeDropCard drop={drop as BiomeDrop}/>)
     } else if (drop.type == "chest") {
@@ -20,14 +22,14 @@ const chooseDropCard = (drop: AbstractDrop) => {
     } else if (drop.type == "gift") {
         return (<GiftDropCard drop={drop as GiftDrop}/>)
     } else if (drop.type == "mob") {
-        return (<MobDropCard drop={drop as MobDrop}/>)
+        return (<MobDropCard drop={drop as MobDrop} worldEntityClickCallBack={worldEntityClickCallBack}/>)
     }
 }
 
-export function DropCard({ drop }: DropCardProps) {
+export function DropCard({ drop, worldEntityClickCallBack }: DropCardProps) {
     return (
         <div>
-            {chooseDropCard(drop)}
+            {chooseDropCard({ drop, worldEntityClickCallBack })}
         </div>
     )
 }

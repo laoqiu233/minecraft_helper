@@ -10,8 +10,11 @@ export interface CraftNodes {
   [key: number]: CraftNode
 }
 
+export type NodeTargetType = "item" | "structure" | "biome" | "mob"
+
 export interface CraftNode {
-  targetItemId: number
+  targetId: number
+  targetType: NodeTargetType
   currentSlide: number
   children: number[]
   drop: AbstractDrop[]
@@ -43,27 +46,34 @@ export const addEntityToBoardThunk = createAsyncThunk<
 
 export const addChildEntityToBoardThunk = createAsyncThunk<
   void,
-  { parentNodeId: number; childTargetItemId: number },
+  { parentNodeId: number, childTargetId: number, childTargetType: NodeTargetType},
   {
     dispatch: AppDispatch
     state: RootState
   }
 >("board/addEntity", async (payload, thunkApi) => {
   const state = thunkApi.getState()
+
   const nodeChildrens =
     state.craftBoard.craftNodes[payload.parentNodeId].children
+
   const isAlreadyChild = nodeChildrens
     .map((childNodeId) => {
-      return state.craftBoard.craftNodes[childNodeId].targetItemId
+      return {
+        targetId: state.craftBoard.craftNodes[childNodeId].targetId,
+        targetType: state.craftBoard.craftNodes[childNodeId].targetType
+      }
     })
-    .some((targetChildItemId) => {
-      return targetChildItemId == payload.childTargetItemId
+    .some(({targetId, targetType}) => {
+      return targetId == payload.childTargetId && targetType == payload.childTargetType
     })
+
   if (!isAlreadyChild) {
-    thunkApi.dispatch(fetchRecipesByItemIdAction(payload.childTargetItemId))
-    const drop: AbstractDrop[] = await fetchDrops(payload.childTargetItemId)
+    thunkApi.dispatch(fetchRecipesByItemIdAction(payload.childTargetId))
+    const drop: AbstractDrop[] = await fetchDrops(payload.childTargetId)
     thunkApi.dispatch(addChild({...payload, drop: drop}))
   }
+
 })
 
 export const craftsBoardSlice = createSlice({
@@ -74,12 +84,14 @@ export const craftsBoardSlice = createSlice({
       state,
       action: PayloadAction<{
         parentNodeId: number
-        childTargetItemId: number
+        childTargetId: number
+        childTargetType: NodeTargetType
         drop: AbstractDrop[]
       }>,
     ) => {
       state.craftNodes[state.currentNodeId] = {
-        targetItemId: action.payload.childTargetItemId,
+        targetId: action.payload.childTargetId,
+        targetType: action.payload.childTargetType,
         currentSlide: 0,
         children: [],
         drop: action.payload.drop
@@ -92,7 +104,8 @@ export const craftsBoardSlice = createSlice({
     pasteNewRoot: (state, action: PayloadAction<{itemId: number, drop: AbstractDrop[]}>) => {
       state.craftNodes = {
         0: {
-          targetItemId: action.payload.itemId,
+          targetId: action.payload.itemId,
+          targetType: "item",
           currentSlide: 0,
           children: [],
           drop: action.payload.drop

@@ -9,15 +9,16 @@ import { likeRecipeByIdAction } from "../../features/recipe/recipeSlice"
 import { Recipe, extractRecipe } from "../../models/Recipe"
 import { Tooltip } from "../Tooltip/Tooltip"
 import { StoneCutterCard } from "./formats/StoneCutterCard"
+import { NodeTargetType } from "../../features/craftsBoard/craftsBoardSlice"
 
 interface RecipeTypeProps {
   recipe?: Recipe
-  itemClickCallBack?: (targetItemId: number) => void
+  worldEntityClickCallBack?: (targetId: number, targetType: NodeTargetType) => void
 }
 
 function chooseRecipeCard(
   recipe?: Recipe,
-  itemClickCallBack?: (targetItemId: number) => void,
+  worldEntityClickCallBack?: (targetId: number, targetType: NodeTargetType) => void,
 ) {
   if (!recipe) {
     return <p>fuck you</p>
@@ -25,28 +26,28 @@ function chooseRecipeCard(
     return (
       <CraftingShapedCard
         recipe={recipe.CraftingShaped}
-        itemClickCallBack={itemClickCallBack}
+        worldEntityClickCallBack={worldEntityClickCallBack}
       />
     )
   } else if (recipe.CraftingShapeless) {
     return (
       <CraftingShapelessCard
         recipe={recipe.CraftingShapeless}
-        itemClickCallBack={itemClickCallBack}
+        worldEntityClickCallBack={worldEntityClickCallBack}
       />
     )
   } else if (recipe.Smelting) {
     return (
       <SmeltingCard
         recipe={recipe.Smelting}
-        itemClickCallBack={itemClickCallBack}
+        worldEntityClickCallBack={worldEntityClickCallBack}
       />
     )
   } else if (recipe.StoneCutter) {
     return (
       <StoneCutterCard
         recipe={recipe.StoneCutter}
-        itemClickCallBack={itemClickCallBack}
+        worldEntityClickCallBack={worldEntityClickCallBack}
       />
     )
   } else {
@@ -129,8 +130,8 @@ function LikeButtons(recipe?: Recipe) {
   return null
 }
 
-export function RecipeCard({ recipe, itemClickCallBack }: RecipeTypeProps) {
-  const card = chooseRecipeCard(recipe, itemClickCallBack)
+export function RecipeCard({ recipe, worldEntityClickCallBack }: RecipeTypeProps) {
+  const card = chooseRecipeCard(recipe, worldEntityClickCallBack)
   const likeButtons = LikeButtons(recipe)
   const userLoggedIn = useAppSelector((state) => state.auth.user !== undefined)
 

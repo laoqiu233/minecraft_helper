@@ -41,6 +41,7 @@
   border-color: #dbdbdb #5b5b5b #5b5b5b #dbdbdb;
   padding: 6px 15px;
   color: #3f3f3f;
+  max-width: 200px;
 }
 
 .clickable {

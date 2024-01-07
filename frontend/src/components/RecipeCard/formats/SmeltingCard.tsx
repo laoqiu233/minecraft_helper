@@ -1,13 +1,14 @@
 import { Cell } from "../../Cell/Cell"
 import styles from "../RecipeCard.module.css"
 import { Smelting } from "../../../models/Recipe"
+import { NodeTargetType } from "../../../features/craftsBoard/craftsBoardSlice"
 
 interface SmeltingCardProps {
   recipe: Smelting
-  itemClickCallBack?: (targetItemId: number) => void
+  worldEntityClickCallBack?: (targetId: number, targetType: NodeTargetType) => void
 }
 
-export function SmeltingCard({ recipe, itemClickCallBack }: SmeltingCardProps) {
+export function SmeltingCard({ recipe, worldEntityClickCallBack }: SmeltingCardProps) {
   return (
     <>
       <div className={styles.recipeCardHeader}>
@@ -23,7 +24,7 @@ export function SmeltingCard({ recipe, itemClickCallBack }: SmeltingCardProps) {
       </div>
       <div className={styles.recipeCardInner}>
         <Cell
-          itemClickCallBack={itemClickCallBack}
+          worldEntityClickCallBack={worldEntityClickCallBack}
           items={[recipe.sourceItem]}
           amount={1}
         />

@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react"
 import styles from "./Cell.module.css"
 import { Tooltip } from "../Tooltip/Tooltip"
+import { NodeTargetType } from "../../features/craftsBoard/craftsBoardSlice"
 
 interface cellProps {
   items: Item[]
   amount: number
-  itemClickCallBack?: (itemId: number) => void
+  worldEntityClickCallBack?: (targetId: number, targetType: NodeTargetType) => void
 }
 
-export function Cell({ items, amount, itemClickCallBack }: cellProps) {
+export function Cell({ items, amount, worldEntityClickCallBack }: cellProps) {
   const [itemCounter, setItemCounter] = useState(0)
 
   useEffect(() => {
@@ -26,7 +27,7 @@ export function Cell({ items, amount, itemClickCallBack }: cellProps) {
 
   return (
     <Tooltip tip={items[itemCounter]?.name}>
-      <div className={styles.invslot + (itemClickCallBack ? " clickable" : "")} onClick={() => {itemClickCallBack?.(items[itemCounter].id)}} >
+      <div className={styles.invslot + (worldEntityClickCallBack ? " clickable" : "")} onClick={() => {worldEntityClickCallBack?.(items[itemCounter].id, "item")}} >
         {items[itemCounter] && (
           <img
             className={styles.invslotItemImage + ' sharp-image'}
