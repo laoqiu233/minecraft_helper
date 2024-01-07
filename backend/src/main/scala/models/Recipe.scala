@@ -56,6 +56,18 @@ object Recipe {
     override def recipeType: String = "smelting"
   }
 
+  case class StoneCutter(
+      id: Int,
+      recipeCategory: Option[String],
+      recipeGroup: Option[String],
+      resultItem: Item,
+      resultItemAmount: Int,
+      sourceItem: Item,
+      likeStatus: LikeStatus = LikeStatus.NoStatus
+  ) extends Recipe {
+    override def recipeType: String = "stonecutter"
+  }
+
   case class Other(
       id: Int,
       recipeCategory: Option[String],

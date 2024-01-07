@@ -2,6 +2,7 @@ package io.dmtri.minecraft
 package storage.jdbc
 
 import io.dmtri.minecraft.models.{LikeStatus, Recipe}
+import io.dmtri.minecraft.storage.jdbc.JdbcRecipeStorage.live
 import io.dmtri.minecraft.storage.{ItemsStorage, RecipeStorage}
 import shapeless.syntax.std.tuple.productTupleOps
 import zio.{Task, URLayer, ZIO, ZLayer}
@@ -94,6 +95,16 @@ case class JdbcRecipeStorage(pool: ZConnectionPool, itemsStorage: ItemsStorage)
           resultAmount,
           smeltTime.getOrElse(0),
           craftType.slice(10, craftType.length),
+          likeStatus
+        )
+      case "minecraft:stonecutting" =>
+        Recipe.StoneCutter(
+          recipeId,
+          category,
+          group,
+          resultItem,
+          resultAmount,
+          ingredients.values.flatten.head,
           likeStatus
         )
       case _ =>

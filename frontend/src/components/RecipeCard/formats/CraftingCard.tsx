@@ -4,19 +4,19 @@ import { CraftingShaped, CraftingShapeless } from "../../../models/Recipe"
 
 interface CraftingShapedCardProps {
   recipe: CraftingShaped
-  itemClickCallBack: (targetItemId: number) => void
+  itemClickCallBack?: (targetItemId: number) => void
 }
 
 interface CraftingShapelessCardProps {
   recipe: CraftingShapeless
-  itemClickCallBack: (targetItemId: number) => void
+  itemClickCallBack?: (targetItemId: number) => void
 }
 
 interface CraftingCardProps {
   itemsGrid: Item[][][]
   resultItem: Item
   resultItemAmount: number
-  itemClickCallBack: (targetItemId: number) => void
+  itemClickCallBack?: (targetItemId: number) => void
 }
 
 function CraftingCard({

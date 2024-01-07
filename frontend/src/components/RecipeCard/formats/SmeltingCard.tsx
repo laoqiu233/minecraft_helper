@@ -4,7 +4,7 @@ import { Smelting } from "../../../models/Recipe"
 
 interface SmeltingCardProps {
   recipe: Smelting
-  itemClickCallBack: (targetItemId: number) => void
+  itemClickCallBack?: (targetItemId: number) => void
 }
 
 export function SmeltingCard({ recipe, itemClickCallBack }: SmeltingCardProps) {
