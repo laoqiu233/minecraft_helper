@@ -35,6 +35,9 @@ export function CraftCard({ craftNodeId }: CraftCardTypeProps) {
   const currentSlide = craftNode.currentSlide
   const slidesLength = recipes.length + drops.length;
 
+  const prevArrowFlag = 0 < craftNode.currentSlide;
+  const nextArrowFlag = slidesLength - 1 > currentSlide;
+
   let currentRecipe = undefined;
   let currentDrop = undefined;
 
@@ -56,14 +59,19 @@ export function CraftCard({ craftNodeId }: CraftCardTypeProps) {
   return (
     <div className={styles.craftCard}>
       <div className={styles.craftCardInner}>
-        {0 < craftNode.currentSlide && (
-          <button onClick={() => dispatch(prevSlide(craftNodeId))}>prev</button>
-        )}
-        {slidesLength - 1 > currentSlide && (
-          <button onClick={() => dispatch(nextSlide(craftNodeId))}>next</button>
-        )}
-        {currentRecipe && <RecipeCard recipe={currentRecipe} itemClickCallBack={addChildNode} />}
-        {currentDrop && <DropCard drop={currentDrop} />}
+        <div className="minecraft-card">
+          {(prevArrowFlag || nextArrowFlag) && <div className={styles.arrowsContainer}>
+            {prevArrowFlag && (
+              <button onClick={() => dispatch(prevSlide(craftNodeId))} className={styles.arrowPrev}></button>
+            )}
+            {nextArrowFlag && (
+              <button onClick={() => dispatch(nextSlide(craftNodeId))} className={styles.arrowNext}></button>
+            )}
+          </div>}
+          {currentRecipe && <RecipeCard recipe={currentRecipe} itemClickCallBack={addChildNode} />}
+          {currentDrop && <DropCard drop={currentDrop} />}
+          {!currentDrop && !currentRecipe && "Fuck You!"}
+        </div>
       </div>
       { childrenNodeIds.length > 0 &&
         <div className={styles.craftCardChildren}>

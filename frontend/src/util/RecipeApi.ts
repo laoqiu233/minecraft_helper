@@ -31,6 +31,12 @@ export async function fetchAllItems(): Promise<Item[]> {
   return result
 }
 
+export async function fetchItem(itemId: number): Promise<Item> {
+  let res = await apiClient.get(`/items/${itemId}`)
+  let result: Item = res.data
+  return result
+}
+
 export async function likeRecipe(
   recipeId: number,
   likeStatus: LikeStatus,

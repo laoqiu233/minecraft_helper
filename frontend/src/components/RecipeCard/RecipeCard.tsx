@@ -127,7 +127,7 @@ export function RecipeCard({ recipe, itemClickCallBack }: RecipeTypeProps) {
   const userLoggedIn = useAppSelector((state) => state.auth.user !== undefined)
 
   return (
-    <div className="minecraft-card">
+    <div>
       {card}
       {userLoggedIn && (
         <div className={styles.likeButtonGroup}>{likeButtons}</div>

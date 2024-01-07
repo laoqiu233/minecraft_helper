@@ -62,3 +62,37 @@
 .craft-card-children>*:first-child:last-child:after {
   width: 0;
 }
+
+.arrow-next, .arrow-prev {
+  border: solid black;
+  border-width: 0 4px 4px 0;
+  display: inline-block;
+  padding: 5px;
+  background: transparent;
+  position: absolute;
+  cursor: pointer;
+}
+
+.arrow-next:hover, .arrow-prev:hover {
+  border-color: rgb(83, 83, 83);
+}
+
+.arrow-prev{
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+  left: -13px;
+}
+
+.arrow-next {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+  right: -13px;
+}
+
+.arrows-container {
+  position: relative;
+  width: 1px;
+  height: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
