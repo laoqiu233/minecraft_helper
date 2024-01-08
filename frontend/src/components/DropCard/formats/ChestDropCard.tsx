@@ -3,12 +3,14 @@ import { ChestDrop } from "../../../models/Drop";
 import { BaseDropInfo } from "./BaseDropInfo";
 import { Structure } from "../../../models/Structure";
 import { fetchStructure } from "../../../util/WorldApi";
+import { NodeTargetType } from "../../../features/craftsBoard/craftsBoardSlice";
 
 interface ChestDropCardProps {
     drop: ChestDrop
+    worldEntityClickCallBack: (targetId: number, targetType: NodeTargetType) => void
 }
 
-export function ChestDropCard({ drop }: ChestDropCardProps) {
+export function ChestDropCard({ drop, worldEntityClickCallBack }: ChestDropCardProps) {
     const [structure, setStructure] = useState<Structure | undefined>(undefined)
 
     useEffect(() => {
@@ -19,7 +21,10 @@ export function ChestDropCard({ drop }: ChestDropCardProps) {
     return (
         <div>
             <BaseDropInfo drop={drop}/>
-            <span>Spawn in chest in: <br /> {structure?.name}</span>
+            <span>
+                <b>Spawn in chest in:</b> <br /> 
+                {structure && <a className="clickable" onClick={() => worldEntityClickCallBack(structure.id, "structure")}>{structure.name}</a>}
+            </span>
         </div>
     )
 }

@@ -22,8 +22,8 @@ export function MobDropCard({ drop, worldEntityClickCallBack }: MobDropCardProps
     return (
         <div>
             <BaseDropInfo drop={drop}/>
-            <span>Drops from: <br /></span>
-            {mob && <a className="clickable" onClick={() => worldEntityClickCallBack(mob.id, "mob")}>{mob?.name}</a>}
+            <span><b>Drops from:</b> <br /></span>
+            {mob && <a className="clickable" onClick={() => worldEntityClickCallBack(mob.id, "mob")}>{mob.name}</a>}
         </div>
     )
 }

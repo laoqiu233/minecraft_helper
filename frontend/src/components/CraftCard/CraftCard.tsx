@@ -7,6 +7,8 @@ import {
 import { MobCard } from "./formats/MobCard"
 import styles from "./CraftCard.module.css"
 import { ItemCard } from "./formats/ItemCard"
+import { BiomeCard } from "./formats/BiomeCard"
+import { StructureCard } from "./formats/StructureCard"
 
 interface CraftCardTypeProps {
   craftNodeId: number
@@ -37,6 +39,8 @@ export function CraftCard({ craftNodeId }: CraftCardTypeProps) {
       <div className={styles.craftCardInner}>
         {craftNode && craftNode.targetType == "item" && <ItemCard craftNodeId={craftNodeId} worldEntityClickCallBack={addChildNode}/>}
         {craftNode && craftNode.targetType == "mob" && <MobCard craftNodeId={craftNodeId} worldEntityClickCallBack={addChildNode}/>}
+        {craftNode && craftNode.targetType == "biome" && <BiomeCard craftNodeId={craftNodeId} worldEntityClickCallBack={addChildNode}/>}
+        {craftNode && craftNode.targetType == "structure" && <StructureCard craftNodeId={craftNodeId} worldEntityClickCallBack={addChildNode}/>}
       </div>
 
       { childrenNodeIds.length > 0 &&

@@ -20,9 +20,9 @@ export function BaseDropInfo({ drop }: BaseDropInfoProps) {
             {resultItem && <Cell items={[resultItem]} amount={1}/>}
             <br />
             <br />
-            <span>Drop probability: {drop.probability}</span>
+            <span><b>Drop probability:</b> {drop.probability}</span>
             <br />
-            <span>Drop amount: {drop.amount}</span>
+            <span><b>Drop amount:</b> {drop.amount}</span>
         </div>
         
     )

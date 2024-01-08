@@ -9,7 +9,7 @@ export function GiftDropCard({ drop }: GiftDropCardProps) {
     return (
         <div>
             <BaseDropInfo drop={drop}/>
-            <span>Gift source: <br /> {drop.giftSource}</span>
+            <span><b>Gift source:</b> <br /> {drop.giftSource}</span>
         </div>
     )
 }

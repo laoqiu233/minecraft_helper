@@ -14,9 +14,9 @@ interface DropCardProps {
 
 const chooseDropCard = ({ drop, worldEntityClickCallBack }: DropCardProps) => {
     if (drop.type == "biome") {
-        return (<BiomeDropCard drop={drop as BiomeDrop}/>)
+        return (<BiomeDropCard drop={drop as BiomeDrop} worldEntityClickCallBack={worldEntityClickCallBack}/>)
     } else if (drop.type == "chest") {
-        return (<ChestDropCard drop={drop as ChestDrop}/>)
+        return (<ChestDropCard drop={drop as ChestDrop} worldEntityClickCallBack={worldEntityClickCallBack}/>)
     } else if (drop.type == "fishing") {
         return (<FishingDropCard drop={drop as FishingDrop}/>)
     } else if (drop.type == "gift") {

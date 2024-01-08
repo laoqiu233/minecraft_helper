@@ -47,3 +47,11 @@
 .clickable {
   cursor: pointer;
 }
+
+a.clickable {
+  color: #5555FF;
+}
+
+.clickable:hover {
+  opacity: 0.8;
+}

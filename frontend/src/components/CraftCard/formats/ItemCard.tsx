@@ -7,12 +7,11 @@ import { RecipeCard } from "../../RecipeCard/RecipeCard"
 import styles from "../CraftCard.module.css"
 
 interface ItemCardProps {
-    craftNodeId: number
-    worldEntityClickCallBack: (targetId: number, targetType: NodeTargetType) => void
-  }
+  craftNodeId: number
+  worldEntityClickCallBack: (targetId: number, targetType: NodeTargetType) => void
+}
 
 export function ItemCard({ craftNodeId, worldEntityClickCallBack }: ItemCardProps) {
-    const childrenNodeIds = useAppSelector(state => state.craftBoard.craftNodes[craftNodeId].children)
     const dispatch = useAppDispatch()
 
     const craftNode: CraftNode = useAppSelector(
@@ -44,17 +43,17 @@ export function ItemCard({ craftNodeId, worldEntityClickCallBack }: ItemCardProp
 
     return (
       <div className="minecraft-card">
-            {(prevArrowFlag || nextArrowFlag) && <div className={styles.arrowsContainer}>
-              {prevArrowFlag && (
-                <button onClick={() => dispatch(prevSlide(craftNodeId))} className={styles.arrowPrev}></button>
-              )}
-              {nextArrowFlag && (
-                <button onClick={() => dispatch(nextSlide(craftNodeId))} className={styles.arrowNext}></button>
-              )}
-            </div>}
-            {currentRecipe && <RecipeCard recipe={currentRecipe} worldEntityClickCallBack={worldEntityClickCallBack} />}
-            {currentDrop && <DropCard drop={currentDrop} worldEntityClickCallBack={worldEntityClickCallBack}/>}
-            {!currentDrop && !currentRecipe && "Fuck You!"}
-          </div>
+        {(prevArrowFlag || nextArrowFlag) && <div className={styles.arrowsContainer}>
+          {prevArrowFlag && (
+            <button onClick={() => dispatch(prevSlide(craftNodeId))} className={styles.arrowPrev}></button>
+          )}
+          {nextArrowFlag && (
+            <button onClick={() => dispatch(nextSlide(craftNodeId))} className={styles.arrowNext}></button>
+          )}
+        </div>}
+        {currentRecipe && <RecipeCard recipe={currentRecipe} worldEntityClickCallBack={worldEntityClickCallBack} />}
+        {currentDrop && <DropCard drop={currentDrop} worldEntityClickCallBack={worldEntityClickCallBack}/>}
+        {!currentDrop && !currentRecipe && "Fuck You!"}
+      </div>
     )
   }
