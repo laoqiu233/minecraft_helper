@@ -33,6 +33,12 @@ export function Cell({ items, amount, worldEntityClickCallBack }: cellProps) {
             className={styles.invslotItemImage + ' sharp-image'}
             src={"images" + items[itemCounter].image}
             alt={items[itemCounter].name}
+            onError={(e) => {
+              // @ts-ignore
+              e.target.onerror = null
+              // @ts-ignore
+              e.target.src = '/images/barrier.png'
+            }}
           />
         )}
         {amount > 1 && <span className={styles.invslotItemCount}>{amount}</span>}
