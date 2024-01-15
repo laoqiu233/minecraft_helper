@@ -1,11 +1,21 @@
+import scala.sys.process._
+
 ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / organization := "io.dmtri"
 ThisBuild / scalaVersion := "2.13.12"
+
+lazy val buildJs = taskKey[Unit]("build javascript assets")
+buildJs := {
+  println("Building javascript frontend bundle")
+  Process(Seq("npm", "run", "build"), new java.io.File("../frontend")).!
+}
 
 lazy val root = (project in file("."))
   .settings(
     name := "backend",
     idePackagePrefix := Some("io.dmtri.minecraft"),
+    Compile / unmanagedResourceDirectories += file("../frontend/build"),
+    Compile / compile := ((Compile / compile) dependsOn buildJs).value,
     assembly / assemblyJarName := "mc_helper_backend.jar",
     assembly / assemblyMergeStrategy := {
       case x if Assembly.isConfigFile(x) =>

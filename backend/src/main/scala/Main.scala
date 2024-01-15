@@ -1,16 +1,39 @@
 package io.dmtri.minecraft
 
 import io.dmtri.minecraft.config.Config
-import io.dmtri.minecraft.handlers.{AuthHandler, AuthService, ItemsHandler, RecipeHandler, WorldHandler}
+import io.dmtri.minecraft.handlers.{
+  AuthHandler,
+  AuthService,
+  ItemsHandler,
+  RecipeHandler,
+  WorldHandler
+}
+import io.dmtri.minecraft.models.ApiError
 import io.dmtri.minecraft.postgres.PostgresConnectionPool
-import io.dmtri.minecraft.storage.{ItemDropStorage, ItemsStorage, RecipeStorage, UserStorage, WorldStorage}
-import io.dmtri.minecraft.storage.jdbc.{JdbcItemDropStorage, JdbcItemsStorage, JdbcRecipeStorage, JdbcUserStorage, JdbcWorldStorage}
+import io.dmtri.minecraft.storage.{
+  ItemDropStorage,
+  ItemsStorage,
+  RecipeStorage,
+  UserStorage,
+  WorldStorage
+}
+import io.dmtri.minecraft.storage.jdbc.{
+  JdbcItemDropStorage,
+  JdbcItemsStorage,
+  JdbcRecipeStorage,
+  JdbcUserStorage,
+  JdbcWorldStorage
+}
 import zio.http._
 import zio.{Scope, ULayer, URLayer, ZIO, ZIOAppArgs, ZIOAppDefault, ZLayer}
 import zio.Console._
 import zio.jdbc.ZConnectionPool
 import io.dmtri.minecraft.models.ApiError._
-import io.dmtri.minecraft.services.{GithubOauthService, ItemDropService, JwtTokenService}
+import io.dmtri.minecraft.services.{
+  GithubOauthService,
+  ItemDropService,
+  JwtTokenService
+}
 
 object Main extends ZIOAppDefault {
   private type Env = HttpApp[Any] with Config
@@ -81,13 +104,22 @@ object Main extends ZIOAppDefault {
     )
   }
 
+  private val indexHandler = Routes(
+    Method.GET / "" -> Handler
+      .fromResource("index.html")
+      .mapError(ApiError.InternalError)
+  ).handleError(encodeErrorResponse).toHttpApp
+
+  private val staticFilesHandler =
+    Routes.empty.toHttpApp @@ Middleware.serveResources(Path.empty)
+
   override val run: ZIO[ZIOAppArgs with Scope, Any, Any] = {
     for {
       config <- ZIO.service[Config]
       app <- ZIO.service[HttpApp[Any]]
       _ <- printLine(s"Starting server on port ${config.api.port}")
       _ <- Server
-        .serve(app)
+        .serve(app ++ indexHandler ++ staticFilesHandler)
         .provide(Server.defaultWith(_.port(config.api.port)))
     } yield ()
   }.provideLayer(makeEnv)
