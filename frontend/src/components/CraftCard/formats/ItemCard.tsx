@@ -53,7 +53,7 @@ export function ItemCard({ craftNodeId, worldEntityClickCallBack }: ItemCardProp
         </div>}
         {currentRecipe && <RecipeCard recipe={currentRecipe} worldEntityClickCallBack={worldEntityClickCallBack} />}
         {currentDrop && <DropCard drop={currentDrop} worldEntityClickCallBack={worldEntityClickCallBack}/>}
-        {!currentDrop && !currentRecipe && "Fuck You!"}
+        {!currentDrop && !currentRecipe && "Recipe not available"}
       </div>
     )
   }

@@ -21,7 +21,7 @@ function chooseRecipeCard(
   worldEntityClickCallBack?: (targetId: number, targetType: NodeTargetType) => void,
 ) {
   if (!recipe) {
-    return <p>fuck you</p>
+    return <p>Recipe not available</p>
   } else if (recipe.CraftingShaped) {
     return (
       <CraftingShapedCard
@@ -51,7 +51,7 @@ function chooseRecipeCard(
       />
     )
   } else {
-    return <p>Recipe not available</p>
+    return <p>Unkown recipe type</p>
   }
 }
 

@@ -24,7 +24,3 @@
 \i ~/sql/triggers.sql
 \i ~/sql/functions.sql
 \i ~/sql/index.sql
-
-INSERT INTO "user" (username, password) VALUES
-('dmitrik', '123456'),
-('rodionik', 'big_bebra');
