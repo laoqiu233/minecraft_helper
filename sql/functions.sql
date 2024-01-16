@@ -63,6 +63,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION get_all_ingredients_of_recipe_for_back(recipe_id INTEGER) RETURNS TABLE(ing_symbol CHAR, item_or_tag_flag BOOLEAN, item_id INTEGER, tag_id INTEGER) AS $$
+BEGIN
+    RETURN QUERY SELECT ingredient.ing_symbol, ingredient.item_or_tag_flag, ingredient.item_id, ingredient.tag_id
+    FROM ingredient
+    WHERE ingredient.craft_id = recipe_id;
+END;
+$$ LANGUAGE plpgsql;
+
 -- Demo of get_all_ingredients_of_recipe
 -- SELECT get_all_ingredients_of_recipe(6);
 

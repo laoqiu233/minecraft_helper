@@ -14,9 +14,7 @@ case class JdbcRecipeStorage(pool: ZConnectionPool, itemsStorage: ItemsStorage)
   private def getIngredientsForRecipe(recipeId: Int) = {
     val ingredientsQuery =
       sql"""
-         SELECT ing_symbol, item_or_tag_flag, item_id, tag_id
-         FROM ingredient
-         WHERE craft_id = $recipeId
+         SELECT * FROM get_all_ingredients_of_recipe_for_back($recipeId)
          """.query[(String, Boolean, Int, Int)].selectAll
 
     ingredientsQuery
